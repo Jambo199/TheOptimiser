@@ -19,7 +19,8 @@ param(
     [switch]$SelfTest,      # validate catalog + dry-run a reg apply/undo, then exit
     [switch]$AsLibrary,     # define functions only (for testing); don't run the UI
     [switch]$NoGui,         # use the classic text menu instead of the GUI
-    [string]$GuiPreview     # render the GUI to this PNG path (no window), then exit
+    [string]$GuiPreview,    # render the GUI to this PNG path (no window), then exit
+    [switch]$DemoBanner     # force-show the "update available" banner once, to preview it
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,6 +34,7 @@ $script:JournalDir  = Join-Path $UndoDir 'journals'
 $script:BackupDir   = Join-Path $UndoDir 'backups'
 $script:UpdateConfig = Join-Path $UndoDir 'update.json'
 $script:CurrentJournal = $null
+$script:Version = '2.1.0'
 
 # ---------------------------------------------------------------- helpers ----
 function Test-Admin {
@@ -313,7 +315,10 @@ function Invoke-UpdateCheck {
         if (-not $v.ok) { return @{ status='bad-signature'; message="Update manifest signature INVALID ($($v.why)). Ignored." } }
         $info = try { $man | ConvertFrom-Json } catch { $null }
         $ver = if ($info -and $info.version) { $info.version } else { '(signed, see manifest)' }
-        return @{ status='verified'; version=$ver; message="Verified signed manifest (key $($v.keyid)). Latest: $ver. Download the signed installer yourself to update." ; info=$info }
+        $newer = Test-NewerVersion $ver $script:Version
+        $msg = if ($newer) { "Update available: v$ver (you have v$script:Version). Signature verified (key $($v.keyid)). Use the banner to get it." }
+               else { "You're on the latest version (v$script:Version). Signature verified." }
+        return @{ status='verified'; version=$ver; newer=$newer; message=$msg; info=$info }
     } catch {
         return @{ status='error'; message="Update check failed: $($_.Exception.Message)" }
     }
@@ -570,6 +575,30 @@ function Remove-Leftovers($items, [switch]$Backup) {
             }
         } catch {}
     }
+}
+
+# ---------------------------------------------------------- version / changelog
+function Test-NewerVersion($remote, $local) {
+    if (-not $remote) { return $false }
+    try { return ([version]$remote) -gt ([version]$local) } catch { return ("$remote" -ne "$local") }
+}
+
+# In-app changelog (newest first). Shipped with the build so the exe is self-contained.
+function Get-Changelog {
+    @(
+        [pscustomobject]@{ version='2.1.0'; date='2026-10-16'; changes=@(
+            'New: in-app update banner - a floating, rounded prompt at the top of the window when a newer, minisign-verified version is available.',
+            'New: Changelog view (this screen).') }
+        [pscustomobject]@{ version='2.0.0'; date='2026-10-16'; changes=@(
+            'New: Clean - winapp2-style junk rules plus Revo/CCleaner-style recent-item (MRU) trace clears; registry clears are backed up and undoable.',
+            'New: Uninstall programs - Win32 + UWP, runs the uninstaller then a leftover scan with High/Med/Low confidence (informed by reverse-engineering Revo Uninstaller Pro). Removals are backed up and undoable.',
+            'New: per-operation transactional journals for undo - an operation that fails part-way rolls back atomically; replaces the flat undo log.',
+            'New: signed updates - a pure-PowerShell minisign / Ed25519 verifier (RFC 8032), checked against the standard test vectors.') }
+        [pscustomobject]@{ version='1.0.0'; date='2026-10-15'; changes=@(
+            '478 deduplicated registry tweaks, assembled from 18 reverse-engineered open-source tools.',
+            'Debloat (Store apps), Install (winget), Services, Expert menu, restore points and undo.',
+            'Compact winutil-style WPF GUI with a scary ASCII PowerShell intro.') }
+    )
 }
 
 # ----------------------------------------------------------------- visuals ---
@@ -1120,6 +1149,7 @@ function Get-OptimiserXaml {
               <ToggleButton x:Name="NavRestore" Style="{StaticResource Nav}" Content="Restore point"/>
               <ToggleButton x:Name="NavUndo"    Style="{StaticResource Nav}" Content="Undo"/>
               <ToggleButton x:Name="NavUpdates" Style="{StaticResource Nav}" Content="Updates (signed)"/>
+              <ToggleButton x:Name="NavChangelog" Style="{StaticResource Nav}" Content="Changelog"/>
               <ToggleButton x:Name="NavExpert"  Style="{StaticResource Nav}" Content="Expert / advanced" Foreground="{StaticResource Danger}"/>
             </StackPanel>
           </DockPanel>
@@ -1162,6 +1192,17 @@ function Get-OptimiserXaml {
         </Grid>
       </Grid>
     </DockPanel>
+    <!-- floating update banner (curved, shadowed, top-centre) -->
+    <Border x:Name="UpdateBanner" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Center"
+            Margin="0,62,0,0" CornerRadius="22" Padding="20,11" Background="#D9141518" BorderBrush="#552E77FF" BorderThickness="1" Panel.ZIndex="5">
+      <Border.Effect><DropShadowEffect BlurRadius="28" ShadowDepth="5" Direction="270" Opacity="0.55" Color="#FF05070A"/></Border.Effect>
+      <StackPanel Orientation="Horizontal">
+        <Ellipse Width="9" Height="9" Fill="{StaticResource Accent2}" VerticalAlignment="Center" Margin="2,0,13,0"/>
+        <TextBlock x:Name="UpdateText" Text="A new version is available - update to the latest version." Foreground="{StaticResource Text}" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <Button x:Name="BtnUpdateGet" Style="{StaticResource Primary}" Content="Update" Height="30" Margin="18,0,0,0"/>
+        <Button x:Name="BtnUpdateDismiss" Style="{StaticResource Ghost}" Content="Later" Height="30" Width="74" Margin="9,0,0,0"/>
+      </StackPanel>
+    </Border>
     <!-- confirm overlay -->
     <Grid x:Name="ConfirmOverlay" Background="#D0161A1E" Visibility="Collapsed">
       <Border Width="460" CornerRadius="6" Background="{StaticResource Panel}" BorderBrush="{StaticResource Accent}" BorderThickness="1" Padding="30" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -1189,14 +1230,14 @@ function Build-OptimiserWindow {
     $G = $script:gui
     $G.win = $win
     $G.ui = @{}
-    'Root','BtnMin','BtnMax','MaxIcon','BtnClose','NavTweaks','NavDebloat','NavPrograms','NavInstall','NavClean','NavServices','NavRestore','NavUndo','NavUpdates','NavExpert',
+    'Root','BtnMin','BtnMax','MaxIcon','BtnClose','NavTweaks','NavDebloat','NavPrograms','NavInstall','NavClean','NavServices','NavRestore','NavUndo','NavUpdates','NavChangelog','NavExpert',
     'AdminDot','AdminText','BuildText','SectionTitle','SectionSub','SearchBox','SelCount','BtnApply','ChipPanel','ListPanel',
     'ViewToggle','ViewList','ViewGrid','ExpertBar','ExpertHint','ExpertPhrase','BtnExpertGo','StatusText','Progress','ConfirmOverlay','ConfirmText','ConfirmRestore',
-    'BtnConfirmNo','BtnConfirmYes' | ForEach-Object { $G.ui[$_] = $win.FindName($_) }
+    'BtnConfirmNo','BtnConfirmYes','UpdateBanner','UpdateText','BtnUpdateGet','BtnUpdateDismiss' | ForEach-Object { $G.ui[$_] = $win.FindName($_) }
 
     $cat = Get-Catalog
     $G.st = [pscustomobject]@{ Section='Tweaks'; Category='All'; View='Compact'; Catalog=$cat; Pending=$null; ExpertEntries=$null; ExpertPhrase=$null;
-                               CleanTargets=$null; Programs=$null; LeftoverApp=$null; Leftovers=$null }
+                               CleanTargets=$null; Programs=$null; LeftoverApp=$null; Leftovers=$null; UpdateUrl=$null }
     foreach ($grp in @($cat.registry, $cat.debloat, $cat.install, $cat.services)) {
         foreach ($e in $grp) { $e | Add-Member -NotePropertyName _sel -NotePropertyValue $false -Force }
     }
@@ -1397,6 +1438,7 @@ function Build-OptimiserWindow {
         if ($st.Section -eq 'Programs')  { & $G.populatePrograms;  & $G.updateCount; return }
         if ($st.Section -eq 'Leftovers') { & $G.populateLeftovers; & $G.updateCount; return }
         if ($st.Section -eq 'Updates')   { & $G.populateUpdates;   & $G.updateCount; return }
+        if ($st.Section -eq 'Changelog') { & $G.populateChangelog; & $G.updateCount; return }
 
         # ---- browse sections (Tweaks / Debloat / Install / Services) ----
         # short, friendly label from a full description (first clause, capped)
@@ -1580,6 +1622,65 @@ function Build-OptimiserWindow {
         [void]$ui.ListPanel.Children.Add($tb)
     }
 
+    $G.populateChangelog = {
+        $G=$script:gui; $ui=$G.ui; $R=$G.res
+        $ui.ListPanel.Children.Clear()
+        foreach ($e in (Get-Changelog)) {
+            $card=New-Object Windows.Controls.Border; $card.CornerRadius='4'; $card.Padding='15,12'; $card.Margin='2,0,8,10'; $card.Background=$R.cardBg; $card.BorderBrush=$R.stroke; $card.BorderThickness='1'
+            $sp=New-Object Windows.Controls.StackPanel
+            $hdr=New-Object Windows.Controls.StackPanel; $hdr.Orientation='Horizontal'
+            $ver=New-Object Windows.Controls.TextBlock; $ver.Text="v$($e.version)"; $ver.Foreground=$R.accent2; $ver.FontSize=15; $ver.FontWeight='SemiBold'
+            [void]$hdr.Children.Add($ver)
+            $meta = "   $($e.date)"; if ($e.version -eq $script:Version) { $meta += "   -   current" }
+            $dt=New-Object Windows.Controls.TextBlock; $dt.Text=$meta; $dt.Foreground=$R.metaFg; $dt.FontSize=11.5; $dt.VerticalAlignment='Bottom'; $dt.Margin='8,0,0,2'
+            [void]$hdr.Children.Add($dt); [void]$sp.Children.Add($hdr)
+            foreach ($c in $e.changes) {
+                $row=New-Object Windows.Controls.TextBlock; $row.Text=" -  $c"; $row.Foreground=$R.bodyFg; $row.FontSize=12.5; $row.TextWrapping='Wrap'; $row.Margin='2,7,10,0'; $row.LineHeight=18
+                [void]$sp.Children.Add($row)
+            }
+            $card.Child=$sp; [void]$ui.ListPanel.Children.Add($card)
+        }
+    }
+
+    $G.showUpdateBanner = {
+        param($version, $url)
+        $G=$script:gui
+        $G.st.UpdateUrl = $url
+        $G.ui.UpdateText.Text = "Version $version is available - update to the latest version."
+        $G.ui.UpdateBanner.Visibility = 'Visible'
+    }
+
+    # background update check: download manifest + .minisig off-thread, verify + compare on the UI thread
+    $G.checkUpdates = {
+        $cfg = Get-UpdateConfig
+        if (-not $cfg -or -not $cfg.url -or -not $cfg.pubkey) { return }
+        $rs=[runspacefactory]::CreateRunspace(); $rs.ApartmentState='MTA'; $rs.Open()
+        $ps=[powershell]::Create(); $ps.Runspace=$rs
+        [void]$ps.AddScript({ param($u)
+            try { $m=(Invoke-WebRequest -Uri $u -UseBasicParsing -TimeoutSec 15).Content
+                  $s=(Invoke-WebRequest -Uri ($u+'.minisig') -UseBasicParsing -TimeoutSec 15).Content
+                  [pscustomobject]@{ man=$m; sig=$s } } catch { $null }
+        }).AddArgument($cfg.url)
+        $h=$ps.BeginInvoke()
+        $timer=New-Object Windows.Threading.DispatcherTimer; $timer.Interval=[TimeSpan]::FromMilliseconds(700)
+        $timer.Add_Tick({
+            if (-not $h.IsCompleted) { return }
+            $timer.Stop()
+            $res=$null; try { $res=$ps.EndInvoke($h)[0] } catch {}
+            try { $ps.Dispose(); $rs.Dispose() } catch {}
+            if (-not $res) { return }
+            try {
+                $c = Get-UpdateConfig
+                $sigLine=(@($res.sig -split "`n") | Where-Object { $_ -notmatch '^(untrusted|trusted) comment:' -and $_.Trim() })[0]
+                $v = Test-MinisignSignature -PubB64 $c.pubkey -SigB64 $sigLine -Message ([Text.Encoding]::UTF8.GetBytes($res.man))
+                if (-not $v.ok) { return }
+                $info = $res.man | ConvertFrom-Json
+                if ($info.version -and (Test-NewerVersion $info.version $script:Version)) { & $script:gui.showUpdateBanner $info.version $info.url }
+            } catch {}
+        }.GetNewClosure())
+        $timer.Start()
+    }
+
     $G.setSection = {
         param($name, $title, $sub)
         $ui = $script:gui.ui; $script:gui.st.Section = $name
@@ -1657,13 +1758,13 @@ function Build-OptimiserWindow {
     }
 
     # ---- nav wiring ----
-    $G.navs = @{ NavTweaks='Tweaks'; NavDebloat='Debloat'; NavPrograms='Programs'; NavInstall='Install'; NavClean='Clean'; NavServices='Services'; NavUndo='Undo'; NavUpdates='Updates'; NavExpert='Expert' }
+    $G.navs = @{ NavTweaks='Tweaks'; NavDebloat='Debloat'; NavPrograms='Programs'; NavInstall='Install'; NavClean='Clean'; NavServices='Services'; NavUndo='Undo'; NavUpdates='Updates'; NavChangelog='Changelog'; NavExpert='Expert' }
     $G.navMeta = @{
         Tweaks=@('Tweaks','pick what you want, then apply'); Debloat=@('Debloat (Store apps)','remove built-in Store/Appx apps (safe shown first)')
         Programs=@('Uninstall programs','remove a desktop program, then clean its leftovers'); Install=@('Install apps','install software with winget')
         Clean=@('Clean','clear junk files and recent-item traces'); Services=@('Services','change service startup types')
         Undo=@('Undo','roll back a previous operation'); Updates=@('Updates (signed)','minisign-verified update check')
-        Expert=@('Expert / advanced','security-weakening - off by default, gated')
+        Changelog=@('Changelog',"what's new in each version"); Expert=@('Expert / advanced','security-weakening - off by default, gated')
     }
     foreach ($navName in @($G.navs.Keys)) {
         $G.ui[$navName].Add_Checked({
@@ -1720,6 +1821,13 @@ function Build-OptimiserWindow {
         if (-not $G.st.ExpertEntries -or $G.ui.ExpertPhrase.Text -cne $G.st.ExpertPhrase) { return }
         & $G.showConfirm "This WEAKENS your system. Write $($G.st.ExpertEntries.Count) registry value(s)?" ({ & $script:gui.apply 'Expert' }.GetNewClosure())
     })
+    $G.ui.BtnUpdateDismiss.Add_Click({ $script:gui.ui.UpdateBanner.Visibility = 'Collapsed' })
+    $G.ui.BtnUpdateGet.Add_Click({
+        $G = $script:gui
+        if ($G.st.UpdateUrl) { try { Start-Process $G.st.UpdateUrl } catch {} ; $G.ui.StatusText.Text = 'Opened the update download page in your browser.' }
+        else { $G.ui.NavUpdates.IsChecked = $true; $G.ui.StatusText.Text = 'See the Updates section for the signed download.' }
+        $G.ui.UpdateBanner.Visibility = 'Collapsed'
+    })
     $G.ui.BtnClose.Add_Click({ $script:gui.win.Close() })
     $G.ui.BtnMin.Add_Click({ $script:gui.win.WindowState = 'Minimized' })
     $G.ui.BtnMax.Add_Click({ $w = $script:gui.win; $w.WindowState = $(if ($w.WindowState -eq 'Maximized') { 'Normal' } else { 'Maximized' }) })
@@ -1748,15 +1856,20 @@ function Build-OptimiserWindow {
 
 function Show-Gui {
     $g = Build-OptimiserWindow
-    $g.Window.Add_Loaded({ try { & $script:gui.scanInstalled } catch {} })
+    $g.Window.Add_Loaded({
+        try { & $script:gui.scanInstalled } catch {}
+        if ($DemoBanner) { & $script:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
+        else { try { & $script:gui.checkUpdates } catch {} }
+    })
     [void]$g.Window.ShowDialog()
 }
 
 function Save-GuiPreview {
-    param([string]$Path, [int]$W = 1280, [int]$H = 840, [string]$Section, [string]$View)
+    param([string]$Path, [int]$W = 1280, [int]$H = 840, [string]$Section, [string]$View, [switch]$ShowUpdate)
     $g = Build-OptimiserWindow
-    if ($Section) { $nav = @{ Debloat='NavDebloat'; Programs='NavPrograms'; Install='NavInstall'; Clean='NavClean'; Services='NavServices'; Undo='NavUndo'; Updates='NavUpdates'; Expert='NavExpert' }[$Section]; if ($nav) { $g.UI[$nav].IsChecked = $true } }
+    if ($Section) { $nav = @{ Debloat='NavDebloat'; Programs='NavPrograms'; Install='NavInstall'; Clean='NavClean'; Services='NavServices'; Undo='NavUndo'; Updates='NavUpdates'; Changelog='NavChangelog'; Expert='NavExpert' }[$Section]; if ($nav) { $g.UI[$nav].IsChecked = $true } }
     if ($View -eq 'Grid') { $g.UI.ViewGrid.IsChecked = $true }
+    if ($ShowUpdate) { & $script:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
     $root = $g.UI.Root
     $root.Width = $W; $root.Height = $H
     $root.Measure([Windows.Size]::new($W, $H))
@@ -1836,7 +1949,11 @@ function Invoke-SelfTest {
     Write-Host ("  [{0}] leftover confidence scoring (High/Med/Low)" -f $(if($scoreOk){'PASS'}else{'FAIL'})) -ForegroundColor ($(if($scoreOk){'Green'}else{'Red'}))
     Write-Host ("  [{0}] leftover scan accumulates matches" -f $(if($lfOk){'PASS'}else{'FAIL'})) -ForegroundColor ($(if($lfOk){'Green'}else{'Red'}))
     Write-Host ("  [{0}] installed-programs enumeration (Win32 + UWP)" -f $(if($progOk){'PASS'}else{'FAIL'})) -ForegroundColor ($(if($progOk){'Green'}else{'Red'}))
-    $pass = $pass -and $sigOk -and (-not $sigBad) -and $rolledBack -and $ctOk -and $scoreOk -and $lfOk -and $progOk
+    $verOk = (Test-NewerVersion '2.2.0' '2.1.0') -and (-not (Test-NewerVersion '2.1.0' '2.1.0')) -and (-not (Test-NewerVersion '2.0.0' '2.1.0'))
+    $clOk  = (@(Get-Changelog).Count -ge 1) -and [bool]((Get-Changelog)[0].version) -and (@(Get-Changelog)[0].version -eq $script:Version)
+    Write-Host ("  [{0}] update version-compare (newer only)" -f $(if($verOk){'PASS'}else{'FAIL'})) -ForegroundColor ($(if($verOk){'Green'}else{'Red'}))
+    Write-Host ("  [{0}] changelog present + top entry = current version" -f $(if($clOk){'PASS'}else{'FAIL'})) -ForegroundColor ($(if($clOk){'Green'}else{'Red'}))
+    $pass = $pass -and $sigOk -and (-not $sigBad) -and $rolledBack -and $ctOk -and $scoreOk -and $lfOk -and $progOk -and $verOk -and $clOk
 
     Write-Host ("`nSELF TEST {0}" -f $(if($pass){'PASSED'}else{'FAILED'})) -ForegroundColor ($(if($pass){'Green'}else{'Red'}))
     if (-not $pass) { exit 1 }
@@ -1847,7 +1964,7 @@ try { $null = [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch {}
 
 if ($AsLibrary) { return }
 if ($SelfTest) { Invoke-SelfTest; return }
-if ($GuiPreview) { if (-not $script:Build) { $script:Build = 'preview' }; Save-GuiPreview -Path $GuiPreview; Write-Host "preview saved: $GuiPreview"; return }
+if ($GuiPreview) { if (-not $script:Build) { $script:Build = 'preview' }; Save-GuiPreview -Path $GuiPreview -ShowUpdate:$DemoBanner; Write-Host "preview saved: $GuiPreview"; return }
 
 if (-not $Launch) {
     Show-Banner

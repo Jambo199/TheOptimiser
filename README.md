@@ -20,7 +20,9 @@ Sophia Script, Winhance and others — and deduplicating their overlapping featu
   Run/Recent/Open-Save history, MuiCache). Registry clears are backed up and undoable.
 - **Services** — change service startup types.
 - **Updates (signed)** — a pure-PowerShell **minisign / Ed25519** verifier (RFC 8032) so update
-  manifests are verified offline before anything is trusted. The installer is never auto-run.
+  manifests are verified offline before anything is trusted. When a newer verified version exists, a
+  **floating "update available" banner** appears at the top of the window. The installer is never auto-run.
+- **Changelog** — an in-app view of what changed in each version (also in `CHANGELOG.md`).
 - **Expert / advanced** — security-weakening options (disable Defender; block all updates; block *driver*
   updates while keeping security patches). Off by default, gated behind a typed confirmation.
 - **Undo** — every change is recorded in a **per-operation journal** (transactional: an operation that
