@@ -1,0 +1,14 @@
+# OS / editor junk
+Thumbs.db
+desktop.ini
+*.tmp
+*~
+
+# Local runtime state lives in %LOCALAPPDATA%\TheOptimiser (journals, backups, update.json)
+# and is never part of the repo. An optional winapp2.ini dropped next to the script is local too.
+winapp2.ini
+update.json
+
+# Personal screenshots (show the installed-program list + username) - kept local, out of the repo
+preview-2-uninstall-installed.png
+preview-5-uninstall-programs.png
