@@ -26,17 +26,32 @@
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="CheckBox">
-              <Border x:Name="track" Width="40" Height="22" CornerRadius="11" Background="#FF343B45">
-                <Ellipse x:Name="knob" Width="16" Height="16" Fill="#FFCbd3dd" HorizontalAlignment="Left" Margin="3,0,0,0"/>
-              </Border>
+              <Grid x:Name="root" Width="40" Height="22">
+                <Border x:Name="trackOff" CornerRadius="11" Background="#FF343B45"/>
+                <Border x:Name="trackOn" CornerRadius="11" Background="{StaticResource AccentGrad}" Opacity="0"/>
+                <Ellipse x:Name="knob" Width="16" Height="16" Fill="#FFEDF1F6" HorizontalAlignment="Left" Margin="3,0,0,0" RenderTransformOrigin="0.5,0.5">
+                  <Ellipse.RenderTransform><TranslateTransform x:Name="knobT" X="0"/></Ellipse.RenderTransform>
+                </Ellipse>
+                <VisualStateManager.VisualStateGroups>
+                  <VisualStateGroup x:Name="CheckStates">
+                    <VisualStateGroup.Transitions>
+                      <VisualTransition GeneratedDuration="0:0:0.18">
+                        <VisualTransition.GeneratedEasingFunction><CubicEase EasingMode="EaseInOut"/></VisualTransition.GeneratedEasingFunction>
+                      </VisualTransition>
+                    </VisualStateGroup.Transitions>
+                    <VisualState x:Name="Unchecked"/>
+                    <VisualState x:Name="Indeterminate"/>
+                    <VisualState x:Name="Checked">
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="knobT" Storyboard.TargetProperty="X" To="18" Duration="0"/>
+                        <DoubleAnimation Storyboard.TargetName="trackOn" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
+                      </Storyboard>
+                    </VisualState>
+                  </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+              </Grid>
               <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="track" Property="Opacity" Value="0.85"/></Trigger>
-                <Trigger Property="IsChecked" Value="True">
-                  <Setter TargetName="track" Property="Background" Value="{StaticResource AccentGrad}"/>
-                  <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
-                  <Setter TargetName="knob" Property="Margin" Value="0,0,3,0"/>
-                  <Setter TargetName="knob" Property="Fill" Value="White"/>
-                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="root" Property="Opacity" Value="0.9"/></Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
           </Setter.Value>

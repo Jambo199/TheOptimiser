@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using TheOptimiser.Models;
@@ -623,7 +624,8 @@ public partial class MainWindow : Window
 
         if (asTile)
         {
-            var badge = new Border { Width = 20, Height = 20, CornerRadius = new CornerRadius(10), Background = Res("Accent"), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Visibility = sel ? Visibility.Visible : Visibility.Collapsed };
+            var badgeScale = new ScaleTransform(sel ? 1 : 0.3, sel ? 1 : 0.3);
+            var badge = new Border { Width = 20, Height = 20, CornerRadius = new CornerRadius(10), Background = Res("Accent"), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Opacity = sel ? 1 : 0, RenderTransformOrigin = new Point(0.5, 0.5), RenderTransform = badgeScale };
             badge.Child = new Viewbox { Width = 11, Height = 11, Child = new System.Windows.Shapes.Path { Data = CheckGeom, Stroke = Brushes.White, StrokeThickness = 2, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round } };
             Grid.SetRowSpan(badge, 2);
             g.Children.Add(badge);
@@ -633,7 +635,11 @@ public partial class MainWindow : Window
                 card.Background = sel ? SelBg : Res("Card");
                 card.BorderBrush = sel ? Res("Accent") : Res("Stroke");
                 card.Opacity = (!sel && installed == false) ? 0.6 : 1.0;
-                badge.Visibility = sel ? Visibility.Visible : Visibility.Collapsed;
+                var dur = TimeSpan.FromMilliseconds(170);
+                IEasingFunction ease = sel ? new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.5 } : new CubicEase { EasingMode = EasingMode.EaseIn };
+                badge.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(sel ? 1 : 0, dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+                badgeScale.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease });
+                badgeScale.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease });
             }
             card.Cursor = Cursors.Hand;
             card.MouseEnter += (_, _) => { if (!sel) card.Background = Res("CardHover"); };
