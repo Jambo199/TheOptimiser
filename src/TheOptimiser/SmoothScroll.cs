@@ -12,8 +12,8 @@ public static class SmoothScroll
 {
     private sealed class State { public double Target; public bool Running; }
 
-    private const double Step = 1.15;   // wheel travel multiplier (120 per notch * this)
-    private const double Ease = 0.20;   // fraction of the remaining distance moved per frame
+    private const double Step = 1.8;    // wheel travel per notch (120 * this) - bigger = more momentum
+    private const double Ease = 0.12;   // fraction of remaining distance moved per frame - smaller = longer, smoother glide
 
     public static void Enable(ScrollViewer sv)
     {
