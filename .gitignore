@@ -9,6 +9,5 @@ desktop.ini
 winapp2.ini
 update.json
 
-# Personal screenshots (show the installed-program list + username) - kept local, out of the repo
-preview-2-uninstall-installed.png
-preview-5-uninstall-programs.png
+# Preview/screenshot renders - UI scratch, and some show the installed-program list - kept local, out of the repo
+preview-*.png

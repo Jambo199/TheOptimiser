@@ -943,22 +943,22 @@ function Get-OptimiserXaml {
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ThE OptImiseR" Width="1280" Height="840" MinWidth="1040" MinHeight="680"
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
-        Background="#FF232629" FontFamily="Segoe UI" TextOptions.TextFormattingMode="Ideal">
+        Background="#FF13151A" FontFamily="Segoe UI" TextOptions.TextFormattingMode="Ideal">
   <WindowChrome.WindowChrome>
     <WindowChrome CaptionHeight="46" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False"/>
   </WindowChrome.WindowChrome>
   <Window.Resources>
-    <SolidColorBrush x:Key="Panel"   Color="#FF2A2E33"/>
-    <SolidColorBrush x:Key="Panel2"  Color="#FF1E2125"/>
-    <SolidColorBrush x:Key="Stroke"  Color="#FF2F373D"/>
-    <SolidColorBrush x:Key="Accent"  Color="#FF2E77FF"/>
-    <SolidColorBrush x:Key="Accent2" Color="#FF5BDCFF"/>
-    <SolidColorBrush x:Key="Text"    Color="#FFF2F4F6"/>
-    <SolidColorBrush x:Key="Muted"   Color="#FF9AA3AC"/>
+    <SolidColorBrush x:Key="Panel"   Color="#FF23262F"/>
+    <SolidColorBrush x:Key="Panel2"  Color="#FF121419"/>
+    <SolidColorBrush x:Key="Stroke"  Color="#FF2C313C"/>
+    <SolidColorBrush x:Key="Accent"  Color="#FF6366F1"/>
+    <SolidColorBrush x:Key="Accent2" Color="#FF22D3EE"/>
+    <SolidColorBrush x:Key="Text"    Color="#FFF2F5F9"/>
+    <SolidColorBrush x:Key="Muted"   Color="#FF8A94A2"/>
     <SolidColorBrush x:Key="Danger"  Color="#FFFF6B6B"/>
-    <SolidColorBrush x:Key="Ok"      Color="#FF6EFF72"/>
-    <LinearGradientBrush x:Key="AccentGrad" StartPoint="0,0" EndPoint="1,1">
-      <GradientStop Color="#FF2E77FF" Offset="0"/><GradientStop Color="#FF2E77FF" Offset="1"/>
+    <SolidColorBrush x:Key="Ok"      Color="#FF34D399"/>
+    <LinearGradientBrush x:Key="AccentGrad" StartPoint="0,0" EndPoint="1,0">
+      <GradientStop Color="#FF6366F1" Offset="0"/><GradientStop Color="#FF22D3EE" Offset="1"/>
     </LinearGradientBrush>
 
     <Style x:Key="Nav" TargetType="ToggleButton">
@@ -997,7 +997,7 @@ function Get-OptimiserXaml {
       <Setter Property="Height" Value="36"/><Setter Property="Foreground" Value="{StaticResource Text}"/><Setter Property="FontSize" Value="13"/><Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Template"><Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="b" CornerRadius="3" Background="#FF2A2E33" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="16,0"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+          <Border x:Name="b" CornerRadius="3" Background="#FF1C1F27" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="16,0"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
           <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter TargetName="b" Property="Background" Value="#FF1B2634"/></Trigger></ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value></Setter>
@@ -1018,7 +1018,7 @@ function Get-OptimiserXaml {
       <Setter Property="Height" Value="28"/><Setter Property="Margin" Value="0,0,7,7"/><Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="FontSize" Value="12"/><Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Template"><Setter.Value>
         <ControlTemplate TargetType="ToggleButton">
-          <Border x:Name="b" CornerRadius="3" Background="#FF2A2E33" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="14,0"><ContentPresenter VerticalAlignment="Center"/></Border>
+          <Border x:Name="b" CornerRadius="3" Background="#FF1C1F27" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="14,0"><ContentPresenter VerticalAlignment="Center"/></Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger>
             <Trigger Property="IsChecked" Value="True"><Setter TargetName="b" Property="Background" Value="#FF08303A"/><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter Property="Foreground" Value="{StaticResource Accent}"/></Trigger>
@@ -1049,12 +1049,12 @@ function Get-OptimiserXaml {
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Template"><Setter.Value>
         <ControlTemplate TargetType="CheckBox">
-          <Border x:Name="box" Width="17" Height="17" CornerRadius="3" Background="#FF0D141D" BorderBrush="{StaticResource Stroke}" BorderThickness="1.5">
-            <Path x:Name="tick" Data="M 3 7 L 7 11 L 13 4" Stroke="#FFF2F4F6" StrokeThickness="2" Visibility="Collapsed" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+          <Border x:Name="t" Width="34" Height="18" CornerRadius="9" Background="#FF3A404B">
+            <Ellipse x:Name="k" Width="13" Height="13" Fill="#FFCbd3dd" HorizontalAlignment="Left" Margin="3,0,0,0"/>
           </Border>
           <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger>
-            <Trigger Property="IsChecked" Value="True"><Setter TargetName="box" Property="Background" Value="{StaticResource AccentGrad}"/><Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter TargetName="tick" Property="Visibility" Value="Visible"/></Trigger>
+            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="t" Property="Opacity" Value="0.85"/></Trigger>
+            <Trigger Property="IsChecked" Value="True"><Setter TargetName="t" Property="Background" Value="{StaticResource AccentGrad}"/><Setter TargetName="k" Property="HorizontalAlignment" Value="Right"/><Setter TargetName="k" Property="Margin" Value="0,0,3,0"/><Setter TargetName="k" Property="Fill" Value="White"/></Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value></Setter>
@@ -1064,12 +1064,12 @@ function Get-OptimiserXaml {
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Template"><Setter.Value>
         <ControlTemplate TargetType="CheckBox">
-          <Border x:Name="box" Width="22" Height="22" CornerRadius="3" Background="#FF0D141D" BorderBrush="{StaticResource Stroke}" BorderThickness="1.5">
-            <Path x:Name="tick" Data="M 4 9 L 9 14 L 17 5" Stroke="#FFF2F4F6" StrokeThickness="2.4" Visibility="Collapsed" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+          <Border x:Name="t" Width="40" Height="22" CornerRadius="11" Background="#FF3A404B">
+            <Ellipse x:Name="k" Width="16" Height="16" Fill="#FFCbd3dd" HorizontalAlignment="Left" Margin="3,0,0,0"/>
           </Border>
           <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger>
-            <Trigger Property="IsChecked" Value="True"><Setter TargetName="box" Property="Background" Value="{StaticResource AccentGrad}"/><Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter TargetName="tick" Property="Visibility" Value="Visible"/></Trigger>
+            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="t" Property="Opacity" Value="0.85"/></Trigger>
+            <Trigger Property="IsChecked" Value="True"><Setter TargetName="t" Property="Background" Value="{StaticResource AccentGrad}"/><Setter TargetName="k" Property="HorizontalAlignment" Value="Right"/><Setter TargetName="k" Property="Margin" Value="0,0,3,0"/><Setter TargetName="k" Property="Fill" Value="White"/></Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value></Setter>
@@ -1097,7 +1097,7 @@ function Get-OptimiserXaml {
 
   <Grid x:Name="Root">
     <Grid.Background>
-      <LinearGradientBrush StartPoint="0,0" EndPoint="0.55,1"><GradientStop Color="#FF232629" Offset="0"/><GradientStop Color="#FF232629" Offset="1"/></LinearGradientBrush>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="0.45,1"><GradientStop Color="#FF13151A" Offset="0"/><GradientStop Color="#FF1A1D24" Offset="1"/></LinearGradientBrush>
     </Grid.Background>
     <DockPanel>
       <!-- title bar -->
@@ -1129,7 +1129,7 @@ function Get-OptimiserXaml {
           <DockPanel Margin="0,8,0,18">
             <StackPanel DockPanel.Dock="Bottom" Margin="24,12,24,0">
               <Border Height="1" Background="{StaticResource Stroke}" Margin="0,0,0,14"/>
-              <Border CornerRadius="4" Background="#FF2A2E33" Padding="14,10">
+              <Border CornerRadius="4" Background="#FF1C1F27" Padding="14,10">
                 <StackPanel Orientation="Horizontal">
                   <Ellipse x:Name="AdminDot" Width="9" Height="9" Fill="{StaticResource Danger}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                   <TextBlock x:Name="AdminText" Text="standard user" Foreground="{StaticResource Muted}" FontSize="11.5" VerticalAlignment="Center"/>
@@ -1163,14 +1163,14 @@ function Get-OptimiserXaml {
               <TextBlock x:Name="SectionSub" Text="pick what you want, then apply" Foreground="{StaticResource Muted}" FontSize="12.5" Margin="0,3,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-              <Border x:Name="ViewToggle" CornerRadius="3" Background="#FF2A2E33" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="3" Margin="0,0,12,0" Visibility="Collapsed">
+              <Border x:Name="ViewToggle" CornerRadius="3" Background="#FF1C1F27" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="3" Margin="0,0,12,0" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal">
                   <ToggleButton x:Name="ViewList" Style="{StaticResource Seg}" Content="Compact" IsChecked="True"/>
                   <ToggleButton x:Name="ViewGrid" Style="{StaticResource Seg}" Content="Cards"/>
                 </StackPanel>
               </Border>
               <TextBox x:Name="SearchBox" Style="{StaticResource Input}" Width="196" Margin="0,0,12,0"/>
-              <Border CornerRadius="3" Background="#FF2A2E33" Padding="13,0" Height="36" Margin="0,0,12,0"><TextBlock x:Name="SelCount" Text="0 selected" Foreground="{StaticResource Accent}" FontSize="12.5" VerticalAlignment="Center"/></Border>
+              <Border CornerRadius="3" Background="#FF1C1F27" Padding="13,0" Height="36" Margin="0,0,12,0"><TextBlock x:Name="SelCount" Text="0 selected" Foreground="{StaticResource Accent}" FontSize="12.5" VerticalAlignment="Center"/></Border>
               <Button x:Name="BtnApply" Style="{StaticResource Primary}" Content="Apply"/>
             </StackPanel>
           </Grid>
@@ -1187,7 +1187,7 @@ function Get-OptimiserXaml {
           </Border>
           <Grid Grid.Row="4" Margin="3,14,3,0">
             <TextBlock x:Name="StatusText" Text="Ready." Foreground="{StaticResource Muted}" FontSize="12.5" VerticalAlignment="Center"/>
-            <ProgressBar x:Name="Progress" Height="4" Width="200" HorizontalAlignment="Right" Minimum="0" Maximum="100" Value="0" Background="#FF2A2E33" BorderThickness="0" Foreground="#FF2E77FF"/>
+            <ProgressBar x:Name="Progress" Height="4" Width="200" HorizontalAlignment="Right" Minimum="0" Maximum="100" Value="0" Background="#FF1C1F27" BorderThickness="0" Foreground="#FF6366F1"/>
           </Grid>
         </Grid>
       </Grid>
@@ -1226,8 +1226,8 @@ function Get-OptimiserXaml {
 function Build-OptimiserWindow {
     Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Xaml -ErrorAction Stop
     $win = [Windows.Markup.XamlReader]::Load([Xml.XmlNodeReader]::new([xml](Get-OptimiserXaml)))
-    $script:gui = @{}
-    $G = $script:gui
+    $global:gui = @{}
+    $G = $global:gui
     $G.win = $win
     $G.ui = @{}
     'Root','BtnMin','BtnMax','MaxIcon','BtnClose','NavTweaks','NavDebloat','NavPrograms','NavInstall','NavClean','NavServices','NavRestore','NavUndo','NavUpdates','NavChangelog','NavExpert',
@@ -1245,7 +1245,7 @@ function Build-OptimiserWindow {
 
     # background scan: which apps are already installed (AppX + winget), then highlight
     $G.scanInstalled = {
-        $script:gui.ui.StatusText.Text = 'Scanning installed apps...'
+        $global:gui.ui.StatusText.Text = 'Scanning installed apps...'
         $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'MTA'; $rs.Open()
         $ps = [powershell]::Create(); $ps.Runspace = $rs
         [void]$ps.AddScript({
@@ -1264,12 +1264,12 @@ function Build-OptimiserWindow {
             try { $ps.Dispose(); $rs.Dispose() } catch {}
             if ($res) {
                 $appx = $res.appx; $wg = "$($res.winget)"
-                foreach ($e in $script:gui.st.Catalog.debloat) { $e._installed = [bool]$appx[$e.id] }
-                foreach ($e in $script:gui.st.Catalog.install)  { $e._installed = ($wg.Length -gt 0 -and $wg.Contains($e.id)) }
-                $nAppx = @($script:gui.st.Catalog.debloat | Where-Object { $_._installed }).Count
-                $script:gui.ui.StatusText.Text = "Scan complete - $nAppx built-in apps present. Green dot = installed."
-                if ($script:gui.st.Section -in @('Debloat','Install')) { & $script:gui.populate }
-            } else { $script:gui.ui.StatusText.Text = 'Could not scan installed apps.' }
+                foreach ($e in $global:gui.st.Catalog.debloat) { $e._installed = [bool]$appx[$e.id] }
+                foreach ($e in $global:gui.st.Catalog.install)  { $e._installed = ($wg.Length -gt 0 -and $wg.Contains($e.id)) }
+                $nAppx = @($global:gui.st.Catalog.debloat | Where-Object { $_._installed }).Count
+                $global:gui.ui.StatusText.Text = "Scan complete - $nAppx built-in apps present. Green dot = installed."
+                if ($global:gui.st.Section -in @('Debloat','Install')) { & $global:gui.populate }
+            } else { $global:gui.ui.StatusText.Text = 'Could not scan installed apps.' }
         }.GetNewClosure())
         $timer.Start()
     }
@@ -1279,13 +1279,14 @@ function Build-OptimiserWindow {
         stroke = $win.FindResource('Stroke'); grad = $win.FindResource('AccentGrad'); danger = $win.FindResource('Danger')
         ok = $win.FindResource('Ok'); check = $win.FindResource('Check'); ghost = $win.FindResource('Ghost')
         checkSm = $win.FindResource('CheckSm'); row = $win.FindResource('Row')
-        cardBg = (& $mk '#FF2A2E33'); metaFg = (& $mk '#FF808A94'); tipBg = (& $mk '#FF2F373D'); bodyFg = (& $mk '#FFC8D0D8')
+        cardBg = (& $mk '#FF23262F'); metaFg = (& $mk '#FF808A94'); tipBg = (& $mk '#FF2F373D'); bodyFg = (& $mk '#FFC8D0D8')
+        cardSel = (& $mk '#FF2A3550'); iconBg = (& $mk '#FF2A3550')
     }
 
     # a clean, readable hover card: title + simplified explanation + context footer
     $G.makeTip = {
         param($title, $body, $foot)
-        $R = $script:gui.res
+        $R = $global:gui.res
         $tt = New-Object Windows.Controls.ToolTip
         $tt.Background = 'Transparent'; $tt.BorderThickness = '0'; $tt.Padding = '0'; $tt.HasDropShadow = $false
         $bd = New-Object Windows.Controls.Border
@@ -1302,18 +1303,18 @@ function Build-OptimiserWindow {
     }
 
     $G.updateCount = {
-        $st = $script:gui.st
+        $st = $global:gui.st
         $n = switch ($st.Section) {
             'Clean'     { @($st.CleanTargets | Where-Object { $_._sel }).Count }
             'Leftovers' { @($st.Leftovers    | Where-Object { $_._sel }).Count }
             default     { $c=$st.Catalog; @($c.registry + $c.debloat + $c.install + $c.services | Where-Object { $_._sel }).Count }
         }
-        $script:gui.ui.SelCount.Text = "$n selected"
+        $global:gui.ui.SelCount.Text = "$n selected"
     }
 
     $G.newCard = {
         param($title, $desc, $meta, $selectable, $entry, $actionText, $actionCb)
-        $R = $script:gui.res
+        $R = $global:gui.res
         $card = New-Object Windows.Controls.Border
         $card.CornerRadius = '4'; $card.Padding = '13,9'; $card.Margin = '2,0,8,6'
         $card.Background = $R.cardBg; $card.BorderBrush = $R.stroke; $card.BorderThickness = '1'
@@ -1322,8 +1323,8 @@ function Build-OptimiserWindow {
         if ($selectable) {
             $cb = New-Object Windows.Controls.CheckBox
             $cb.Style = $R.check; $cb.VerticalAlignment = 'Center'; $cb.Margin = '2,0,14,0'; $cb.IsChecked = [bool]$entry._sel
-            $cb.Add_Checked({ $entry._sel = $true; & $script:gui.updateCount }.GetNewClosure())
-            $cb.Add_Unchecked({ $entry._sel = $false; & $script:gui.updateCount }.GetNewClosure())
+            $cb.Add_Checked({ $entry._sel = $true; & $global:gui.updateCount }.GetNewClosure())
+            $cb.Add_Unchecked({ $entry._sel = $false; & $global:gui.updateCount }.GetNewClosure())
             [Windows.Controls.Grid]::SetColumn($cb, 0); [void]$g.Children.Add($cb)
         }
         $sp = New-Object Windows.Controls.StackPanel; [Windows.Controls.Grid]::SetColumn($sp, 1)
@@ -1346,16 +1347,16 @@ function Build-OptimiserWindow {
 
     $G.newRow = {
         param($label, $tip, $entry)
-        $R = $script:gui.res
+        $R = $global:gui.res
         $b = New-Object Windows.Controls.Border; $b.Style = $R.row; $b.Width = 316; $b.Height = 30; $b.Padding = '9,0'; $b.Margin = '0,0,6,2'
-        $b.ToolTip = (& $script:gui.makeTip $tip.T $tip.B $tip.F)
+        $b.ToolTip = (& $global:gui.makeTip $tip.T $tip.B $tip.F)
         [Windows.Controls.ToolTipService]::SetInitialShowDelay($b, 320)
         [Windows.Controls.ToolTipService]::SetShowDuration($b, 40000)
         $g = New-Object Windows.Controls.Grid
         foreach ($w in 'Auto','*','Auto') { $cd = New-Object Windows.Controls.ColumnDefinition; $cd.Width = $w; [void]$g.ColumnDefinitions.Add($cd) }
         $cb = New-Object Windows.Controls.CheckBox; $cb.Style = $R.checkSm; $cb.VerticalAlignment = 'Center'; $cb.Margin = '0,0,11,0'; $cb.IsChecked = [bool]$entry._sel
-        $cb.Add_Checked({ $entry._sel = $true; & $script:gui.updateCount }.GetNewClosure())
-        $cb.Add_Unchecked({ $entry._sel = $false; & $script:gui.updateCount }.GetNewClosure())
+        $cb.Add_Checked({ $entry._sel = $true; & $global:gui.updateCount }.GetNewClosure())
+        $cb.Add_Unchecked({ $entry._sel = $false; & $global:gui.updateCount }.GetNewClosure())
         [Windows.Controls.Grid]::SetColumn($cb, 0); [void]$g.Children.Add($cb)
         $t = New-Object Windows.Controls.TextBlock; $t.Text = $label; $t.Foreground = $R.text; $t.FontSize = 12.5; $t.VerticalAlignment = 'Center'; $t.TextTrimming = 'CharacterEllipsis'
         [Windows.Controls.Grid]::SetColumn($t, 1); [void]$g.Children.Add($t)
@@ -1376,16 +1377,16 @@ function Build-OptimiserWindow {
 
     $G.newTile = {
         param($title, $sub, $tag, $entry)
-        $R = $script:gui.res
+        $R = $global:gui.res
         $card = New-Object Windows.Controls.Border
         $card.Width = 230; $card.CornerRadius = '4'; $card.Padding = '13,11'; $card.Margin = '0,0,10,10'
         $card.Background = $R.cardBg; $card.BorderBrush = $R.stroke; $card.BorderThickness = '1'
-        $card.ToolTip = (& $script:gui.makeTip $title $sub $tag); [Windows.Controls.ToolTipService]::SetInitialShowDelay($card, 320); [Windows.Controls.ToolTipService]::SetShowDuration($card, 40000)
+        $card.ToolTip = (& $global:gui.makeTip $title $sub $tag); [Windows.Controls.ToolTipService]::SetInitialShowDelay($card, 320); [Windows.Controls.ToolTipService]::SetShowDuration($card, 40000)
         $sp = New-Object Windows.Controls.StackPanel
         $top = New-Object Windows.Controls.StackPanel; $top.Orientation = 'Horizontal'
         $cb = New-Object Windows.Controls.CheckBox; $cb.Style = $R.check; $cb.VerticalAlignment = 'Top'; $cb.Margin = '0,2,12,0'; $cb.IsChecked = [bool]$entry._sel
-        $cb.Add_Checked({ $entry._sel = $true; & $script:gui.updateCount }.GetNewClosure())
-        $cb.Add_Unchecked({ $entry._sel = $false; & $script:gui.updateCount }.GetNewClosure())
+        $cb.Add_Checked({ $entry._sel = $true; & $global:gui.updateCount }.GetNewClosure())
+        $cb.Add_Unchecked({ $entry._sel = $false; & $global:gui.updateCount }.GetNewClosure())
         $nm = New-Object Windows.Controls.TextBlock; $nm.Text = $title; $nm.Foreground = $R.text; $nm.FontSize = 13.5; $nm.FontWeight = 'SemiBold'; $nm.TextWrapping = 'Wrap'; $nm.Width = 168
         [void]$top.Children.Add($cb); [void]$top.Children.Add($nm); [void]$sp.Children.Add($top)
         $s = New-Object Windows.Controls.TextBlock; $s.Text = $sub; $s.Foreground = $R.muted; $s.FontSize = 11; $s.TextWrapping = 'Wrap'; $s.Height = 48; $s.TextTrimming = 'CharacterEllipsis'; $s.Margin = '0,10,0,0'
@@ -1396,14 +1397,58 @@ function Build-OptimiserWindow {
         $card
     }
 
+    # shared toggle handlers (via Tag) so cards don't each need a GetNewClosure - big build-speed win
+    $G.onTogChk   = { param($s,$ev) $s.Tag.e._sel = $true;  $s.Tag.card.BorderBrush = $global:gui.res.accent; & $global:gui.updateCount }
+    $G.onTogUnchk = { param($s,$ev) $s.Tag.e._sel = $false; $s.Tag.card.BorderBrush = $global:gui.res.stroke; & $global:gui.updateCount }
+
+    # eclean-style card: icon chip + toggle, title + description. No tooltip (desc is on the card)
+    # and no drop-shadow, so hundreds render fast.
+    $G.newBCard = {
+        param($title, $desc, $meta, $iconText, $iconColor, $entry)
+        $R = $global:gui.res
+        $card = New-Object Windows.Controls.Border
+        $card.Width = 226; $card.MinHeight = 94; $card.CornerRadius = '10'; $card.Padding = '14,12'; $card.Margin = '0,0,13,13'
+        $card.Background = $R.cardBg; $card.BorderThickness = '1.3'
+        $card.BorderBrush = if ([bool]$entry._sel) { $R.accent } else { $R.stroke }
+        $g = New-Object Windows.Controls.Grid
+        $rd0 = New-Object Windows.Controls.RowDefinition; $rd0.Height = 'Auto'; $rd1 = New-Object Windows.Controls.RowDefinition; $rd1.Height = '*'
+        [void]$g.RowDefinitions.Add($rd0); [void]$g.RowDefinitions.Add($rd1)
+        # top: icon chip + toggle
+        $top = New-Object Windows.Controls.Grid
+        foreach ($w in 'Auto','*') { $cd = New-Object Windows.Controls.ColumnDefinition; $cd.Width = $w; [void]$top.ColumnDefinitions.Add($cd) }
+        $icon = New-Object Windows.Controls.Border; $icon.Width = 30; $icon.Height = 30; $icon.CornerRadius = '8'
+        $icon.Background = (New-Object Windows.Media.SolidColorBrush ([Windows.Media.ColorConverter]::ConvertFromString($iconColor)))
+        $itx = New-Object Windows.Controls.TextBlock; $itx.Text = $iconText; $itx.Foreground = $R.text; $itx.FontSize = 13; $itx.FontWeight = 'SemiBold'; $itx.HorizontalAlignment = 'Center'; $itx.VerticalAlignment = 'Center'
+        $icon.Child = $itx; [void]$top.Children.Add($icon)
+        $cb = New-Object Windows.Controls.CheckBox; $cb.Style = $R.check; $cb.HorizontalAlignment = 'Right'; $cb.VerticalAlignment = 'Center'; $cb.IsChecked = [bool]$entry._sel
+        $cb.Tag = @{ e = $entry; card = $card }
+        $cb.Add_Checked($global:gui.onTogChk); $cb.Add_Unchecked($global:gui.onTogUnchk)
+        [Windows.Controls.Grid]::SetColumn($cb, 1); [void]$top.Children.Add($cb)
+        [void]$g.Children.Add($top)
+        # bottom: title + desc
+        $sp = New-Object Windows.Controls.StackPanel; $sp.VerticalAlignment = 'Bottom'; $sp.Margin = '0,11,0,0'; [Windows.Controls.Grid]::SetRow($sp, 1)
+        $nm = New-Object Windows.Controls.TextBlock; $nm.Text = $title; $nm.Foreground = $R.text; $nm.FontSize = 13; $nm.FontWeight = 'SemiBold'; $nm.TextTrimming = 'CharacterEllipsis'
+        $ds = New-Object Windows.Controls.TextBlock; $ds.Text = $desc; $ds.Foreground = $R.muted; $ds.FontSize = 11; $ds.TextWrapping = 'Wrap'; $ds.MaxHeight = 30; $ds.TextTrimming = 'CharacterEllipsis'; $ds.Margin = '0,3,0,0'
+        [void]$sp.Children.Add($nm); [void]$sp.Children.Add($ds)
+        [void]$g.Children.Add($sp)
+        # installed indicator (apps): green dot when present, dimmed when not
+        $inst = $entry.PSObject.Properties['_installed']
+        if ($inst -and $null -ne $inst.Value) {
+            if ($inst.Value) { $dot = New-Object Windows.Shapes.Ellipse; $dot.Width = 8; $dot.Height = 8; $dot.Fill = $R.ok; $dot.HorizontalAlignment = 'Left'; $dot.VerticalAlignment = 'Top'; $dot.Margin = '24,-2,0,0'; $dot.ToolTip = 'Installed'; [void]$top.Children.Add($dot) }
+            else { $card.Opacity = 0.62 }
+        }
+        $card.Child = $g
+        $card
+    }
+
     $G.revert = {
         param($path)
         $n = Invoke-JournalRevert $path
-        $script:gui.ui.StatusText.Text = "Reverted $n change(s)."; & $script:gui.populate
+        $global:gui.ui.StatusText.Text = "Reverted $n change(s)."; & $global:gui.populate
     }
 
     $G.populate = {
-        $G = $script:gui; $ui = $G.ui; $st = $G.st; $nc = $G.newCard; $nt = $G.newTile; $nr = $G.newRow
+        $G = $global:gui; $ui = $G.ui; $st = $G.st; $nc = $G.newCard; $nt = $G.newTile; $nr = $G.newRow
         $ui.ListPanel.Children.Clear()
         $q = ($ui.SearchBox.Text).Trim()
 
@@ -1416,7 +1461,7 @@ function Build-OptimiserWindow {
             )
             foreach ($grp in $groups) {
                 [void]$ui.ListPanel.Children.Add((& $nc $grp.t $grp.d 'source: PC-Tuning' $false $null 'Select' ({
-                    $st = $script:gui.st; $ui = $script:gui.ui
+                    $st = $global:gui.st; $ui = $global:gui.ui
                     $st.ExpertEntries = $st.Catalog.advanced.($grp.k); $st.ExpertPhrase = $grp.phrase
                     $ui.ExpertHint.Text = "Type   $($grp.phrase)   then Execute:"; $ui.ExpertPhrase.Text=''; $ui.BtnExpertGo.IsEnabled = $false
                     $ui.StatusText.Text = "Selected: $($grp.t)"
@@ -1429,7 +1474,7 @@ function Build-OptimiserWindow {
             if (-not $ops) { $tb = New-Object Windows.Controls.TextBlock; $tb.Text='No operations to undo yet.'; $tb.Foreground=$G.res.muted; $tb.Margin='6'; [void]$ui.ListPanel.Children.Add($tb) }
             foreach ($op in $ops) {
                 $when = try { ([datetime]$op.When).ToString('yyyy-MM-dd HH:mm') } catch { '' }
-                [void]$ui.ListPanel.Children.Add((& $nc $op.Title "$($op.Count) change(s) recorded     $when" '' $false $null 'Revert' ({ & $script:gui.revert $op.Path }.GetNewClosure())))
+                [void]$ui.ListPanel.Children.Add((& $nc $op.Title "$($op.Count) change(s) recorded     $when" '' $false $null 'Revert' ({ & $global:gui.revert $op.Path }.GetNewClosure())))
             }
             & $G.updateCount; return
         }
@@ -1440,93 +1485,57 @@ function Build-OptimiserWindow {
         if ($st.Section -eq 'Updates')   { & $G.populateUpdates;   & $G.updateCount; return }
         if ($st.Section -eq 'Changelog') { & $G.populateChangelog; & $G.updateCount; return }
 
-        # ---- browse sections (Tweaks / Debloat / Install / Services) ----
-        # short, friendly label from a full description (first clause, capped)
-        $short = { param($d) $s = (($d -split '[.!]')[0]).Trim(); if ($s.Length -gt 58) { $s.Substring(0, 56).Trim() + '...' } else { $s } }
-        $items = @(); $lab = $null; $tip = $null; $meta = $null
+        # ---- browse sections (Tweaks / Debloat / Install / Services) as eclean-style cards ----
+        $short = { param($d) $s = (($d -split '[.!]')[0]).Trim(); if ($s.Length -gt 64) { $s.Substring(0, 62).Trim() + '...' } else { $s } }
+        $palette = @('#FF2A3550','#FF2E4A3B','#FF46304A','#FF3A3A58','#FF2F4A52','#FF4A422F','#FF472F44','#FF2F3A4E','#FF3F4A2F')
+        $colorFor = { param($key) $h=0; foreach($ch in [char[]]"$key"){ $h = ($h*31 + [int]$ch) }; $palette[[Math]::Abs($h) % $palette.Count] }
+        $mk = $null; $groups = @()
         switch ($st.Section) {
             'Tweaks' {
                 $items = $st.Catalog.registry
                 if ($st.Category -ne 'All') { $items = $items | Where-Object { $_.category -eq $st.Category } }
                 if ($q) { $items = $items | Where-Object { $_.description -match [regex]::Escape($q) -or $_.name -match [regex]::Escape($q) } }
-                $lab  = { param($e) & $short $e.description }
-                $tip  = { param($e) @{ T=(& $short $e.description); B=$e.description; F="$($e.category)     |     recommended by $([string]::Join(', ', $e.sources))" } }
-                $meta = { param($e) "$($e.hive)\...\$($e.name) = $($e.value)    -    $([string]::Join(', ', $e.sources))" }
+                $mk = { param($e) @{ title=(& $short $e.description); desc=$e.description; key=$e.category } }
+                if ($st.Category -ne 'All') { $groups = @(,@{ n=$null; it=@($items) }) }
+                else { $by=[ordered]@{}; foreach($e in $items){ if(-not $by.Contains($e.category)){$by[$e.category]=[System.Collections.Generic.List[object]]::new()}; [void]$by[$e.category].Add($e) }; foreach($k in ($by.Keys|Sort-Object)){ $groups += ,@{ n=$k; it=$by[$k] } } }
             }
             'Debloat' {
                 $items = $st.Catalog.debloat
                 if ($q) { $items = $items | Where-Object { $_.name -match [regex]::Escape($q) -or $_.id -match [regex]::Escape($q) } }
-                $safe = @{ safe='Safe to remove'; optional='Optional - remove if you do not use it'; unsafe='Caution - part of Windows, removing may break things' }
-                $lab  = { param($e) $e.name }
-                $tip  = { param($e) @{ T=$e.name; B="$($e.description).  Uninstalling frees space and removes it for all users; reinstall from the Microsoft Store if you need it back."; F="$($safe[$e.safety])     |     $($e.id)" } }
-                $meta = { param($e) "[$($e.safety)]    $($e.id)" }
+                $mk = { param($e) @{ title=$e.name; desc=$e.description; key=$e.name } }
+                $nm2=@{ safe='Safe to remove'; optional='Optional'; unsafe='Caution - part of Windows' }
+                foreach($k in 'safe','optional','unsafe'){ $it=@($items|Where-Object{$_.safety -eq $k}); if($it.Count){ $groups += ,@{ n=$nm2[$k]; it=$it } } }
             }
             'Install' {
                 $items = $st.Catalog.install
                 if ($q) { $items = $items | Where-Object { $_.name -match [regex]::Escape($q) -or $_.id -match [regex]::Escape($q) } }
-                $lab  = { param($e) $e.name }
-                $tip  = { param($e) @{ T=$e.name; B="$($e.description).  Installed with winget (Microsoft's package manager), so it stays updatable."; F="$($e.category)     |     $($e.id)" } }
-                $meta = { param($e) "$($e.category)    -    $($e.id)" }
+                $mk = { param($e) @{ title=$e.name; desc=$e.description; key=$e.category } }
+                $by=[ordered]@{}; foreach($e in $items){ if(-not $by.Contains($e.category)){$by[$e.category]=[System.Collections.Generic.List[object]]::new()}; [void]$by[$e.category].Add($e) }; foreach($k in ($by.Keys|Sort-Object)){ $groups += ,@{ n=$k; it=$by[$k] } }
             }
             'Services' {
                 $items = $st.Catalog.services
-                $lab  = { param($e) "$($e.name)  ->  $($e.startup)" }
-                $tip  = { param($e) @{ T=$e.name; B="Sets this service to start '$($e.startup)' instead of '$($e.original)'. Fewer always-on services can free memory and speed boot; Undo (or set it back) if something stops working."; F="recommended by $([string]::Join(', ', $e.sources))" } }
-                $meta = { param($e) "startup -> $($e.startup)  (was $($e.original))" }
+                $mk = { param($e) @{ title=$e.name; desc="Start as '$($e.startup)' instead of '$($e.original)'. Fewer always-on services can free memory and speed boot."; key='Services' } }
+                $groups = @(,@{ n=$null; it=@($items) })
             }
         }
-
-        if ($st.View -eq 'Cards') {
-            if ($st.Section -in @('Debloat','Install')) {
-                $wp = New-Object Windows.Controls.WrapPanel
-                foreach ($e in $items) { [void]$wp.Children.Add((& $nt (& $lab $e) "$($e.description)" (& $meta $e) $e)) }
-                [void]$ui.ListPanel.Children.Add($wp)
-            } else {
-                foreach ($e in $items) {
-                    if ($st.Section -eq 'Tweaks') { [void]$ui.ListPanel.Children.Add((& $nc $e.description $e.category (& $meta $e) $true $e $null $null)) }
-                    else { [void]$ui.ListPanel.Children.Add((& $nc $e.name (& $meta $e) "$([string]::Join(', ', $e.sources))" $true $e $null $null)) }
-                }
+        foreach ($grp in $groups) {
+            if ($grp.n) {
+                $hd = New-Object Windows.Controls.TextBlock; $hd.Text = ($grp.n.ToUpper() + "    " + @($grp.it).Count); $hd.Foreground = $G.res.accent2; $hd.FontSize = 11.5; $hd.FontWeight = 'SemiBold'; $hd.Margin = '3,8,0,11'
+                [void]$ui.ListPanel.Children.Add($hd)
             }
-        } else {
-            # Compact: winutil-style category columns (grouped) or a flat multi-column flow
-            $groups = @()
-            switch ($st.Section) {
-                'Tweaks'  { if ($st.Category -ne 'All') { $groups = @(,@{ n=$null; it=$items }) }
-                            else { $by=[ordered]@{}; foreach($e in $items){ if(-not $by.Contains($e.category)){$by[$e.category]=[System.Collections.Generic.List[object]]::new()}; [void]$by[$e.category].Add($e) }; foreach($k in ($by.Keys|Sort-Object)){ $groups += ,@{ n=$k; it=$by[$k] } } } }
-                'Install' { $by=[ordered]@{}; foreach($e in $items){ if(-not $by.Contains($e.category)){$by[$e.category]=[System.Collections.Generic.List[object]]::new()}; [void]$by[$e.category].Add($e) }; foreach($k in ($by.Keys|Sort-Object)){ $groups += ,@{ n=$k; it=$by[$k] } } }
-                'Debloat' { $nm=@{ safe='Safe to remove'; optional='Optional'; unsafe='Caution - part of Windows' }; foreach($k in 'safe','optional','unsafe'){ $it=@($items|Where-Object{$_.safety -eq $k}); if($it.Count){ $groups += ,@{ n=$nm[$k]; it=$it } } } }
-                default   { $groups = @(,@{ n=$null; it=$items }) }
+            $wp = New-Object Windows.Controls.WrapPanel
+            foreach ($e in $grp.it) {
+                $c = & $mk $e
+                $k = "$($c.key)"; $ic = if ($k.Length -ge 1) { $k.Substring(0,1).ToUpper() } else { '#' }
+                [void]$wp.Children.Add((& $G.newBCard $c.title $c.desc '' $ic (& $colorFor $k) $e))
             }
-            if ($groups.Count -le 1) {
-                $wp = New-Object Windows.Controls.WrapPanel
-                foreach ($e in $groups[0].it) { [void]$wp.Children.Add((& $nr (& $lab $e) (& $tip $e) $e)) }
-                [void]$ui.ListPanel.Children.Add($wp)
-            } else {
-                $w = if ($script:gui.win.ActualWidth -gt 200) { $script:gui.win.ActualWidth } else { 1280 }
-                $cols = [Math]::Max(2, [Math]::Min(4, [int](($w - 280) / 338)))
-                $colP = @(1..$cols | ForEach-Object { New-Object Windows.Controls.StackPanel })
-                $colH = New-Object 'double[]' $cols
-                foreach ($grp in $groups) {
-                    $ci = 0; for ($i=1; $i -lt $cols; $i++){ if ($colH[$i] -lt $colH[$ci]) { $ci=$i } }
-                    $gp = New-Object Windows.Controls.StackPanel; $gp.Margin = '0,0,0,16'
-                    $hdt = New-Object Windows.Controls.TextBlock; $hdt.Text = ($grp.n.ToUpper() + "   (" + $grp.it.Count + ")"); $hdt.Foreground = $G.res.accent2; $hdt.FontSize = 11.5; $hdt.FontWeight = 'SemiBold'; $hdt.Margin = '4,0,0,4'
-                    [void]$gp.Children.Add($hdt)
-                    $ln = New-Object Windows.Controls.Border; $ln.Height = 1; $ln.Background = $G.res.stroke; $ln.Margin = '0,0,0,7'
-                    [void]$gp.Children.Add($ln)
-                    foreach ($e in $grp.it) { [void]$gp.Children.Add((& $nr (& $lab $e) (& $tip $e) $e)) }
-                    [void]$colP[$ci].Children.Add($gp)
-                    $colH[$ci] += 2.6 + $grp.it.Count
-                }
-                $rowHost = New-Object Windows.Controls.StackPanel; $rowHost.Orientation = 'Horizontal'
-                foreach ($cp in $colP) { $cp.Width = 326; $cp.Margin = '0,0,16,0'; [void]$rowHost.Children.Add($cp) }
-                [void]$ui.ListPanel.Children.Add($rowHost)
-            }
+            [void]$ui.ListPanel.Children.Add($wp)
         }
         & $G.updateCount
     }
 
     $G.populateClean = {
-        $G=$script:gui; $ui=$G.ui; $st=$G.st; $nc=$G.newCard
+        $G=$global:gui; $ui=$G.ui; $st=$G.st; $nc=$G.newCard
         if (-not $st.CleanTargets) {
             $st.CleanTargets = @(Get-CleanTargets)
             foreach ($t in $st.CleanTargets) { $t | Add-Member -NotePropertyName _sel -NotePropertyValue $false -Force }
@@ -1549,7 +1558,7 @@ function Build-OptimiserWindow {
     }
 
     $G.populatePrograms = {
-        $G=$script:gui; $ui=$G.ui; $st=$G.st; $nc=$G.newCard
+        $G=$global:gui; $ui=$G.ui; $st=$G.st; $nc=$G.newCard
         if (-not $st.Programs) { $ui.StatusText.Text='Reading installed programs...'; $st.Programs=@(Get-InstalledPrograms); $ui.StatusText.Text="$($st.Programs.Count) installed program(s)." }
         $ui.ListPanel.Children.Clear()
         $q=($ui.SearchBox.Text).Trim()
@@ -1557,16 +1566,16 @@ function Build-OptimiserWindow {
         if ($q) { $items = $items | Where-Object { $_.name -match [regex]::Escape($q) -or $_.publisher -match [regex]::Escape($q) } }
         foreach ($app in $items) {
             $meta = "$($app.type)     $($app.publisher)     $($app.version)"
-            [void]$ui.ListPanel.Children.Add((& $nc $app.name ($app.location) $meta $false $null 'Uninstall' ({ & $script:gui.startUninstall $app }.GetNewClosure())))
+            [void]$ui.ListPanel.Children.Add((& $nc $app.name ($app.location) $meta $false $null 'Uninstall' ({ & $global:gui.startUninstall $app }.GetNewClosure())))
         }
     }
 
     # run a program's uninstaller, then show its leftovers for review
     $G.startUninstall = {
         param($app)
-        $G=$script:gui
+        $G=$global:gui
         & $G.showConfirm "Uninstall '$($app.name)'? I'll run its uninstaller, then scan for leftovers. Nothing extra is removed without your OK." ({
-            $G=$script:gui; $ui=$G.ui
+            $G=$global:gui; $ui=$G.ui
             $ui.StatusText.Text="Uninstalling $($app.name)..."
             try { Invoke-ProgramUninstall $app } catch {}
             $ui.StatusText.Text="Scanning for leftovers..."
@@ -1577,7 +1586,7 @@ function Build-OptimiserWindow {
     }
 
     $G.populateLeftovers = {
-        $G=$script:gui; $ui=$G.ui; $st=$G.st; $R=$G.res
+        $G=$global:gui; $ui=$G.ui; $st=$G.st; $R=$G.res
         $ui.ListPanel.Children.Clear()
         $lf = @($st.Leftovers)
         if (-not $lf) {
@@ -1594,8 +1603,8 @@ function Build-OptimiserWindow {
                 $g=New-Object Windows.Controls.Grid
                 foreach ($w in 'Auto','Auto','*') { $cd=New-Object Windows.Controls.ColumnDefinition; $cd.Width=$w; [void]$g.ColumnDefinitions.Add($cd) }
                 $cb=New-Object Windows.Controls.CheckBox; $cb.Style=$R.checkSm; $cb.VerticalAlignment='Center'; $cb.Margin='0,0,11,0'; $cb.IsChecked=[bool]$it._sel
-                $cb.Add_Checked({ $it._sel=$true; & $script:gui.updateCount }.GetNewClosure())
-                $cb.Add_Unchecked({ $it._sel=$false; & $script:gui.updateCount }.GetNewClosure())
+                $cb.Add_Checked({ $it._sel=$true; & $global:gui.updateCount }.GetNewClosure())
+                $cb.Add_Unchecked({ $it._sel=$false; & $global:gui.updateCount }.GetNewClosure())
                 [Windows.Controls.Grid]::SetColumn($cb,0); [void]$g.Children.Add($cb)
                 $k=New-Object Windows.Controls.TextBlock; $k.Text=$it.kind; $k.Foreground=$R.metaFg; $k.FontSize=10.5; $k.VerticalAlignment='Center'; $k.Width=62
                 [Windows.Controls.Grid]::SetColumn($k,1); [void]$g.Children.Add($k)
@@ -1607,13 +1616,13 @@ function Build-OptimiserWindow {
     }
 
     $G.populateUpdates = {
-        $G=$script:gui; $ui=$G.ui; $nc=$G.newCard; $R=$G.res
+        $G=$global:gui; $ui=$G.ui; $nc=$G.newCard; $R=$G.res
         $ui.ListPanel.Children.Clear()
         $cfg = Get-UpdateConfig
         $src = if ($cfg -and $cfg.url) { $cfg.url } else { '(none configured)' }
         $key = if ($cfg -and $cfg.pubkey) { $cfg.pubkey.Substring(0,[Math]::Min(24,$cfg.pubkey.Length))+'...' } else { '(no public key)' }
         [void]$ui.ListPanel.Children.Add((& $nc 'Signed updates (minisign / Ed25519)' "Update manifests are verified with a minisign Ed25519 signature before anything is trusted - the scheme eclean uses. Source: $src     Key: $key" "config: $UpdateConfig" $false $null 'Check now' ({
-            $G=$script:gui; $G.ui.StatusText.Text='Checking for a signed update...'
+            $G=$global:gui; $G.ui.StatusText.Text='Checking for a signed update...'
             $r = Invoke-UpdateCheck; $G.ui.StatusText.Text = $r.message
         }.GetNewClosure())))
         $tb=New-Object Windows.Controls.TextBlock
@@ -1623,7 +1632,7 @@ function Build-OptimiserWindow {
     }
 
     $G.populateChangelog = {
-        $G=$script:gui; $ui=$G.ui; $R=$G.res
+        $G=$global:gui; $ui=$G.ui; $R=$G.res
         $ui.ListPanel.Children.Clear()
         foreach ($e in (Get-Changelog)) {
             $card=New-Object Windows.Controls.Border; $card.CornerRadius='4'; $card.Padding='15,12'; $card.Margin='2,0,8,10'; $card.Background=$R.cardBg; $card.BorderBrush=$R.stroke; $card.BorderThickness='1'
@@ -1644,7 +1653,7 @@ function Build-OptimiserWindow {
 
     $G.showUpdateBanner = {
         param($version, $url)
-        $G=$script:gui
+        $G=$global:gui
         $G.st.UpdateUrl = $url
         $G.ui.UpdateText.Text = "Version $version is available - update to the latest version."
         $G.ui.UpdateBanner.Visibility = 'Visible'
@@ -1654,6 +1663,7 @@ function Build-OptimiserWindow {
     $G.checkUpdates = {
         $cfg = Get-UpdateConfig
         if (-not $cfg -or -not $cfg.url -or -not $cfg.pubkey) { return }
+        $curVer = $script:Version   # capture into a local so the closure tick can see it
         $rs=[runspacefactory]::CreateRunspace(); $rs.ApartmentState='MTA'; $rs.Open()
         $ps=[powershell]::Create(); $ps.Runspace=$rs
         [void]$ps.AddScript({ param($u)
@@ -1675,7 +1685,7 @@ function Build-OptimiserWindow {
                 $v = Test-MinisignSignature -PubB64 $c.pubkey -SigB64 $sigLine -Message ([Text.Encoding]::UTF8.GetBytes($res.man))
                 if (-not $v.ok) { return }
                 $info = $res.man | ConvertFrom-Json
-                if ($info.version -and (Test-NewerVersion $info.version $script:Version)) { & $script:gui.showUpdateBanner $info.version $info.url }
+                if ($info.version -and (Test-NewerVersion $info.version $curVer)) { & $global:gui.showUpdateBanner $info.version $info.url }
             } catch {}
         }.GetNewClosure())
         $timer.Start()
@@ -1683,25 +1693,25 @@ function Build-OptimiserWindow {
 
     $G.setSection = {
         param($name, $title, $sub)
-        $ui = $script:gui.ui; $script:gui.st.Section = $name
+        $ui = $global:gui.ui; $global:gui.st.Section = $name
         $ui.SectionTitle.Text = $title; $ui.SectionSub.Text = $sub
         $ui.ChipPanel.Visibility = $(if ($name -eq 'Tweaks') { 'Visible' } else { 'Collapsed' })
-        $ui.ViewToggle.Visibility = $(if ($name -in @('Tweaks','Debloat','Install','Services')) { 'Visible' } else { 'Collapsed' })
+        $ui.ViewToggle.Visibility = 'Collapsed'   # single eclean-style card view now
         $ui.ExpertBar.Visibility = $(if ($name -eq 'Expert') { 'Visible' } else { 'Collapsed' })
         $ui.BtnApply.Visibility  = $(if ($name -in @('Tweaks','Debloat','Install','Services','Clean','Leftovers')) { 'Visible' } else { 'Collapsed' })
         $ui.BtnApply.Content = switch ($name) { 'Clean' { 'Clean' } 'Leftovers' { 'Remove selected' } default { 'Apply' } }
-        & $script:gui.populate
+        & $global:gui.populate
     }
 
     $G.showConfirm = {
         param($msg, $action)
-        $ui = $script:gui.ui
-        $ui.ConfirmText.Text = $msg; $ui.ConfirmRestore.IsChecked = $false; $script:gui.st.Pending = $action; $ui.ConfirmOverlay.Visibility = 'Visible'
+        $ui = $global:gui.ui
+        $ui.ConfirmText.Text = $msg; $ui.ConfirmRestore.IsChecked = $false; $global:gui.st.Pending = $action; $ui.ConfirmOverlay.Visibility = 'Visible'
     }
 
     $G.apply = {
         param($kind)
-        $st = $script:gui.st; $ui = $script:gui.ui
+        $st = $global:gui.st; $ui = $global:gui.ui
         switch ($kind) {
             'Tweaks' {
                 $sel = @($st.Catalog.registry | Where-Object { $_._sel }); foreach ($e in $sel) { $e._sel=$false }
@@ -1752,7 +1762,7 @@ function Build-OptimiserWindow {
                 Complete-Journal | Out-Null
                 $st.Programs = $null   # force the installed-programs list to re-read
                 $ui.StatusText.Text = "Removed $($sel.Count) leftover item(s) - backed up, undoable from Undo."
-                & $script:gui.setSection 'Programs' 'Uninstall programs' 'remove a desktop program, then clean its leftovers'
+                & $global:gui.setSection 'Programs' 'Uninstall programs' 'remove a desktop program, then clean its leftovers'
             }
         }
     }
@@ -1769,19 +1779,19 @@ function Build-OptimiserWindow {
     foreach ($navName in @($G.navs.Keys)) {
         $G.ui[$navName].Add_Checked({
             param($s,$e)
-            $G = $script:gui
+            $G = $global:gui
             foreach ($o in @($G.navs.Keys)) { if ($G.ui[$o] -ne $s) { $G.ui[$o].IsChecked = $false } }
             $m = $G.navMeta[$G.navs[$s.Name]]; & $G.setSection $G.navs[$s.Name] $m[0] $m[1]
         })
     }
-    $G.ui.NavRestore.Add_Checked({ param($s,$e); $s.IsChecked=$false; $script:gui.ui.StatusText.Text='Creating restore point (see console)...'; New-RestorePointSafe; $script:gui.ui.StatusText.Text='Restore point step finished.' })
+    $G.ui.NavRestore.Add_Checked({ param($s,$e); $s.IsChecked=$false; $global:gui.ui.StatusText.Text='Creating restore point (see console)...'; New-RestorePointSafe; $global:gui.ui.StatusText.Text='Restore point step finished.' })
 
     # ---- chips ----
     foreach ($c in (@('All') + ($cat.registry.category | Sort-Object -Unique))) {
         $chip = New-Object Windows.Controls.Primitives.ToggleButton
         $chip.Style = $win.FindResource('Chip'); $chip.Content = $c; if ($c -eq 'All') { $chip.IsChecked = $true }
         $chip.Add_Checked({ param($s,$e)
-            $G = $script:gui
+            $G = $global:gui
             foreach ($o in $G.ui.ChipPanel.Children) { if ($o -ne $s) { $o.IsChecked = $false } }
             $G.st.Category = $s.Content; & $G.populate
         })
@@ -1789,15 +1799,15 @@ function Build-OptimiserWindow {
     }
 
     # ---- search / confirm / apply / expert / chrome ----
-    $G.ui.SearchBox.Add_TextChanged({ & $script:gui.populate })
-    $G.ui.BtnConfirmNo.Add_Click({ $script:gui.ui.ConfirmOverlay.Visibility = 'Collapsed'; $script:gui.st.Pending = $null })
+    $G.ui.SearchBox.Add_TextChanged({ & $global:gui.populate })
+    $G.ui.BtnConfirmNo.Add_Click({ $global:gui.ui.ConfirmOverlay.Visibility = 'Collapsed'; $global:gui.st.Pending = $null })
     $G.ui.BtnConfirmYes.Add_Click({
-        $G = $script:gui; $G.ui.ConfirmOverlay.Visibility = 'Collapsed'
+        $G = $global:gui; $G.ui.ConfirmOverlay.Visibility = 'Collapsed'
         if ($G.ui.ConfirmRestore.IsChecked) { $G.ui.StatusText.Text='Creating restore point...'; New-RestorePointSafe }
         if ($G.st.Pending) { & $G.st.Pending }; $G.st.Pending = $null; & $G.populate
     })
     $G.ui.BtnApply.Add_Click({
-        $G = $script:gui; $st = $G.st
+        $G = $global:gui; $st = $G.st
         $n = switch ($st.Section) {
             'Clean'     { @($st.CleanTargets | Where-Object { $_._sel }).Count }
             'Leftovers' { @($st.Leftovers    | Where-Object { $_._sel }).Count }
@@ -1813,36 +1823,36 @@ function Build-OptimiserWindow {
             'Leftovers' { "Remove $n ticked leftover item(s)? They are backed up and can be undone." }
         }
         $sec = $st.Section
-        & $G.showConfirm $msg ({ & $script:gui.apply $sec }.GetNewClosure())
+        & $G.showConfirm $msg ({ & $global:gui.apply $sec }.GetNewClosure())
     })
-    $G.ui.ExpertPhrase.Add_TextChanged({ $G=$script:gui; $G.ui.BtnExpertGo.IsEnabled = ($G.st.ExpertPhrase -and $G.ui.ExpertPhrase.Text -ceq $G.st.ExpertPhrase) })
+    $G.ui.ExpertPhrase.Add_TextChanged({ $G=$global:gui; $G.ui.BtnExpertGo.IsEnabled = ($G.st.ExpertPhrase -and $G.ui.ExpertPhrase.Text -ceq $G.st.ExpertPhrase) })
     $G.ui.BtnExpertGo.Add_Click({
-        $G = $script:gui
+        $G = $global:gui
         if (-not $G.st.ExpertEntries -or $G.ui.ExpertPhrase.Text -cne $G.st.ExpertPhrase) { return }
-        & $G.showConfirm "This WEAKENS your system. Write $($G.st.ExpertEntries.Count) registry value(s)?" ({ & $script:gui.apply 'Expert' }.GetNewClosure())
+        & $G.showConfirm "This WEAKENS your system. Write $($G.st.ExpertEntries.Count) registry value(s)?" ({ & $global:gui.apply 'Expert' }.GetNewClosure())
     })
-    $G.ui.BtnUpdateDismiss.Add_Click({ $script:gui.ui.UpdateBanner.Visibility = 'Collapsed' })
+    $G.ui.BtnUpdateDismiss.Add_Click({ $global:gui.ui.UpdateBanner.Visibility = 'Collapsed' })
     $G.ui.BtnUpdateGet.Add_Click({
-        $G = $script:gui
+        $G = $global:gui
         if ($G.st.UpdateUrl) { try { Start-Process $G.st.UpdateUrl } catch {} ; $G.ui.StatusText.Text = 'Opened the update download page in your browser.' }
         else { $G.ui.NavUpdates.IsChecked = $true; $G.ui.StatusText.Text = 'See the Updates section for the signed download.' }
         $G.ui.UpdateBanner.Visibility = 'Collapsed'
     })
-    $G.ui.BtnClose.Add_Click({ $script:gui.win.Close() })
-    $G.ui.BtnMin.Add_Click({ $script:gui.win.WindowState = 'Minimized' })
-    $G.ui.BtnMax.Add_Click({ $w = $script:gui.win; $w.WindowState = $(if ($w.WindowState -eq 'Maximized') { 'Normal' } else { 'Maximized' }) })
+    $G.ui.BtnClose.Add_Click({ $global:gui.win.Close() })
+    $G.ui.BtnMin.Add_Click({ $global:gui.win.WindowState = 'Minimized' })
+    $G.ui.BtnMax.Add_Click({ $w = $global:gui.win; $w.WindowState = $(if ($w.WindowState -eq 'Maximized') { 'Normal' } else { 'Maximized' }) })
     # maximised WindowChrome windows overflow a few px; pad + swap the icon to a restore glyph
     $win.Add_StateChanged({
-        $G = $script:gui
+        $G = $global:gui
         if ($G.win.WindowState -eq 'Maximized') { $G.ui.Root.Margin = '8'; $G.ui.MaxIcon.Data = 'M 2 2 L 10 2 L 10 10 L 2 10 Z M 0 0 L 8 0 M 0 0 L 0 8' }
         else { $G.ui.Root.Margin = '0'; $G.ui.MaxIcon.Data = 'M 0 0 L 10 0 L 10 10 L 0 10 Z' }
     })
 
     # view toggle (List / Grid) for Uninstall & Install
-    $G.ui.ViewList.Add_Checked({ $G=$script:gui; $G.ui.ViewGrid.IsChecked=$false; $G.st.View='Compact'; & $G.populate })
-    $G.ui.ViewGrid.Add_Checked({ $G=$script:gui; $G.ui.ViewList.IsChecked=$false; $G.st.View='Cards'; & $G.populate })
-    $G.ui.ViewList.Add_Unchecked({ $G=$script:gui; if (-not $G.ui.ViewGrid.IsChecked) { $G.ui.ViewList.IsChecked=$true } })
-    $G.ui.ViewGrid.Add_Unchecked({ $G=$script:gui; if (-not $G.ui.ViewList.IsChecked) { $G.ui.ViewGrid.IsChecked=$true } })
+    $G.ui.ViewList.Add_Checked({ $G=$global:gui; $G.ui.ViewGrid.IsChecked=$false; $G.st.View='Compact'; & $G.populate })
+    $G.ui.ViewGrid.Add_Checked({ $G=$global:gui; $G.ui.ViewList.IsChecked=$false; $G.st.View='Cards'; & $G.populate })
+    $G.ui.ViewList.Add_Unchecked({ $G=$global:gui; if (-not $G.ui.ViewGrid.IsChecked) { $G.ui.ViewList.IsChecked=$true } })
+    $G.ui.ViewGrid.Add_Unchecked({ $G=$global:gui; if (-not $G.ui.ViewList.IsChecked) { $G.ui.ViewGrid.IsChecked=$true } })
 
     # window + taskbar icon
     try { $icoPath = Join-Path $script:Root 'TheOptimiser.ico'; if (Test-Path $icoPath) { $win.Icon = New-Object Windows.Media.Imaging.BitmapImage ([Uri]$icoPath) } } catch {}
@@ -1856,10 +1866,15 @@ function Build-OptimiserWindow {
 
 function Show-Gui {
     $g = Build-OptimiserWindow
+    # keep the GUI alive if a single event handler throws (don't crash out to the text menu)
+    $g.Window.Dispatcher.add_UnhandledException({ param($s,$e)
+        $e.Handled = $true
+        try { $global:gui.ui.StatusText.Text = "A step failed: $($e.Exception.Message)" } catch {}
+    })
     $g.Window.Add_Loaded({
-        try { & $script:gui.scanInstalled } catch {}
-        if ($DemoBanner) { & $script:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
-        else { try { & $script:gui.checkUpdates } catch {} }
+        try { & $global:gui.scanInstalled } catch {}
+        if ($DemoBanner) { & $global:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
+        else { try { & $global:gui.checkUpdates } catch {} }
     })
     [void]$g.Window.ShowDialog()
 }
@@ -1869,7 +1884,7 @@ function Save-GuiPreview {
     $g = Build-OptimiserWindow
     if ($Section) { $nav = @{ Debloat='NavDebloat'; Programs='NavPrograms'; Install='NavInstall'; Clean='NavClean'; Services='NavServices'; Undo='NavUndo'; Updates='NavUpdates'; Changelog='NavChangelog'; Expert='NavExpert' }[$Section]; if ($nav) { $g.UI[$nav].IsChecked = $true } }
     if ($View -eq 'Grid') { $g.UI.ViewGrid.IsChecked = $true }
-    if ($ShowUpdate) { & $script:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
+    if ($ShowUpdate) { & $global:gui.showUpdateBanner '9.9.9' 'https://github.com/Jambo199/TheOptimiser/releases' }
     $root = $g.UI.Root
     $root.Width = $W; $root.Height = $H
     $root.Measure([Windows.Size]::new($W, $H))

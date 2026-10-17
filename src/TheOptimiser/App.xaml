@@ -1,0 +1,185 @@
+<Application x:Class="TheOptimiser.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <ResourceDictionary>
+
+      <!-- ===== dark, non-blue (emerald) palette ===== -->
+      <SolidColorBrush x:Key="Bg"       Color="#FF0E0F13"/>
+      <SolidColorBrush x:Key="Sidebar"  Color="#FF0A0B0E"/>
+      <SolidColorBrush x:Key="Card"     Color="#FF16181E"/>
+      <SolidColorBrush x:Key="CardHover" Color="#FF1C1F27"/>
+      <SolidColorBrush x:Key="Stroke"   Color="#FF23262E"/>
+      <SolidColorBrush x:Key="Accent"   Color="#FF10B981"/>
+      <SolidColorBrush x:Key="Accent2"  Color="#FF34D399"/>
+      <SolidColorBrush x:Key="Text"     Color="#FFECEFF3"/>
+      <SolidColorBrush x:Key="Muted"    Color="#FF868F9C"/>
+      <SolidColorBrush x:Key="Danger"   Color="#FFF26D6D"/>
+      <SolidColorBrush x:Key="Amber"    Color="#FFE0A33A"/>
+      <LinearGradientBrush x:Key="AccentGrad" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#FF059669" Offset="0"/><GradientStop Color="#FF34D399" Offset="1"/>
+      </LinearGradientBrush>
+
+      <!-- ===== toggle switch (CheckBox) ===== -->
+      <Style x:Key="Toggle" TargetType="CheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="CheckBox">
+              <Border x:Name="track" Width="40" Height="22" CornerRadius="11" Background="#FF343B45">
+                <Ellipse x:Name="knob" Width="16" Height="16" Fill="#FFCbd3dd" HorizontalAlignment="Left" Margin="3,0,0,0"/>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="track" Property="Opacity" Value="0.85"/></Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="track" Property="Background" Value="{StaticResource AccentGrad}"/>
+                  <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
+                  <Setter TargetName="knob" Property="Margin" Value="0,0,3,0"/>
+                  <Setter TargetName="knob" Property="Fill" Value="White"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== sidebar nav item (RadioButton) ===== -->
+      <Style x:Key="Nav" TargetType="RadioButton">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="12,2"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="RadioButton">
+              <Border x:Name="b" CornerRadius="8" Background="Transparent" Padding="12,0">
+                <Grid>
+                  <Border x:Name="bar" Width="3" HorizontalAlignment="Left" CornerRadius="2" Background="{StaticResource Accent}" Opacity="0"/>
+                  <ContentPresenter VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FF13151B"/><Setter Property="Foreground" Value="{StaticResource Text}"/></Trigger>
+                <Trigger Property="IsChecked" Value="True"><Setter TargetName="b" Property="Background" Value="#FF11201A"/><Setter TargetName="bar" Property="Opacity" Value="1"/><Setter Property="Foreground" Value="{StaticResource Text}"/><Setter Property="FontWeight" Value="SemiBold"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== filter chip (ToggleButton) ===== -->
+      <Style x:Key="Chip" TargetType="ToggleButton">
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Margin" Value="0,0,7,7"/>
+        <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ToggleButton">
+              <Border x:Name="b" CornerRadius="14" Background="#FF14161C" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="14,0">
+                <ContentPresenter VerticalAlignment="Center"/>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger>
+                <Trigger Property="IsChecked" Value="True"><Setter TargetName="b" Property="Background" Value="#FF10291F"/><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter Property="Foreground" Value="{StaticResource Accent2}"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== primary button ===== -->
+      <Style x:Key="Primary" TargetType="Button">
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="b" CornerRadius="9" Background="{StaticResource AccentGrad}" Padding="22,0">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Opacity" Value="0.9"/></Trigger>
+                <Trigger Property="IsEnabled" Value="False"><Setter TargetName="b" Property="Opacity" Value="0.35"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== minor / outlined button (presets) ===== -->
+      <Style x:Key="Minor" TargetType="Button">
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="b" CornerRadius="8" Background="#FF171A20" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="14,0">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/><Setter TargetName="b" Property="Background" Value="#FF11231C"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== caption button (min/max/close) ===== -->
+      <Style x:Key="Cap" TargetType="Button">
+        <Setter Property="Width" Value="46"/><Setter Property="Height" Value="34"/>
+        <Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="b" Background="Transparent"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+              <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="b" Property="Background" Value="#FF1A1D24"/><Setter Property="Foreground" Value="{StaticResource Text}"/></Trigger></ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== search box ===== -->
+      <Style x:Key="Search" TargetType="TextBox">
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource Accent}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="TextBox">
+              <Border x:Name="b" CornerRadius="9" Background="#FF14161C" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="12,0">
+                <ScrollViewer x:Name="PART_ContentHost"/>
+              </Border>
+              <ControlTemplate.Triggers><Trigger Property="IsFocused" Value="True"><Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger></ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- ===== thin scrollbar ===== -->
+      <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="9"/><Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ScrollBar">
+              <Grid Background="Transparent"><Track x:Name="PART_Track" IsDirectionReversed="True"><Track.Thumb>
+                <Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border CornerRadius="4" Background="#FF2A333C" Margin="2,0"/></ControlTemplate></Thumb.Template></Thumb>
+              </Track.Thumb></Track></Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

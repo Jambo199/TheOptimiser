@@ -1,0 +1,118 @@
+<Window x:Class="TheOptimiser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="ThE OptImiseR" Width="1280" Height="840" MinWidth="1040" MinHeight="680"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
+        Background="{StaticResource Bg}" FontFamily="Segoe UI" TextOptions.TextFormattingMode="Ideal">
+  <shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="44" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False"/>
+  </shell:WindowChrome.WindowChrome>
+
+  <Grid x:Name="Root">
+    <DockPanel>
+      <!-- title bar -->
+      <Grid DockPanel.Dock="Top" Height="44">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+          <Border Width="26" Height="26" CornerRadius="7" Background="{StaticResource AccentGrad}" Margin="0,0,10,0">
+            <TextBlock Text="O" Foreground="White" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <TextBlock Text="ThE OptImiseR" Foreground="{StaticResource Text}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+          <TextBlock Text="  //  system optimiser" Foreground="{StaticResource Muted}" FontSize="12" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <Button x:Name="BtnMin" Style="{StaticResource Cap}" Content="&#8211;" FontSize="15" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+          <Button x:Name="BtnMax" Style="{StaticResource Cap}" Content="&#9633;" FontSize="12" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+          <Button x:Name="BtnClose" Style="{StaticResource Cap}" Content="&#10005;" FontSize="12" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+        </StackPanel>
+      </Grid>
+
+      <!-- body -->
+      <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+
+        <!-- sidebar -->
+        <Border Grid.Column="0" Background="{StaticResource Sidebar}">
+          <DockPanel Margin="0,10,0,16">
+            <StackPanel DockPanel.Dock="Bottom" Margin="22,12,22,0">
+              <Border Height="1" Background="{StaticResource Stroke}" Margin="0,0,0,12"/>
+              <Border CornerRadius="8" Background="#FF14161C" Padding="12,9">
+                <StackPanel Orientation="Horizontal">
+                  <Ellipse x:Name="AdminDot" Width="8" Height="8" Fill="{StaticResource Danger}" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                  <TextBlock x:Name="AdminText" Text="standard user" Foreground="{StaticResource Muted}" FontSize="11.5" VerticalAlignment="Center"/>
+                </StackPanel>
+              </Border>
+              <Button x:Name="BtnElevate" Style="{StaticResource Minor}" Content="Run as administrator" Margin="0,8,0,0" HorizontalAlignment="Stretch" Visibility="Collapsed"/>
+            </StackPanel>
+            <StackPanel>
+              <TextBlock Text="NAVIGATE" Foreground="#FF4E5663" FontSize="10.5" FontWeight="SemiBold" Margin="28,8,0,8"/>
+              <RadioButton x:Name="NavTweaks"   Style="{StaticResource Nav}" Content="Tweaks" IsChecked="True" GroupName="nav"/>
+              <RadioButton x:Name="NavDebloat"  Style="{StaticResource Nav}" Content="Debloat" GroupName="nav"/>
+              <RadioButton x:Name="NavPrograms" Style="{StaticResource Nav}" Content="Uninstall programs" GroupName="nav"/>
+              <RadioButton x:Name="NavInstall"  Style="{StaticResource Nav}" Content="Install apps" GroupName="nav"/>
+              <RadioButton x:Name="NavClean"    Style="{StaticResource Nav}" Content="Clean" GroupName="nav"/>
+              <RadioButton x:Name="NavServices" Style="{StaticResource Nav}" Content="Services" GroupName="nav"/>
+              <TextBlock Text="SYSTEM" Foreground="#FF4E5663" FontSize="10.5" FontWeight="SemiBold" Margin="28,16,0,8"/>
+              <RadioButton x:Name="NavUndo"     Style="{StaticResource Nav}" Content="Undo" GroupName="nav"/>
+              <RadioButton x:Name="NavUpdates"  Style="{StaticResource Nav}" Content="Updates" GroupName="nav"/>
+              <RadioButton x:Name="NavExpert"   Style="{StaticResource Nav}" Content="Expert" Foreground="{StaticResource Danger}" GroupName="nav"/>
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <!-- main -->
+        <Grid Grid.Column="1" Margin="26,14,22,16">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <!-- header -->
+          <Grid Grid.Row="0" Margin="0,0,0,14">
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock x:Name="SectionTitle" Text="Tweaks" Foreground="{StaticResource Text}" FontSize="22" FontWeight="SemiBold"/>
+              <TextBlock x:Name="SectionSub" Text="toggle what you want, then apply" Foreground="{StaticResource Muted}" FontSize="12.5" Margin="0,2,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+              <TextBox x:Name="SearchBox" Style="{StaticResource Search}" Width="200" Margin="0,0,10,0"/>
+              <Border CornerRadius="9" Background="#FF14161C" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Padding="14,0" Height="36" Margin="0,0,10,0">
+                <TextBlock x:Name="SelCount" Text="0 selected" Foreground="{StaticResource Accent2}" FontSize="12.5" VerticalAlignment="Center"/>
+              </Border>
+              <Button x:Name="BtnApply" Style="{StaticResource Primary}" Content="Apply"/>
+            </StackPanel>
+          </Grid>
+          <!-- filters -->
+          <StackPanel x:Name="FilterPanel" Grid.Row="1" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+              <Button x:Name="BtnRecommended" Style="{StaticResource Minor}" Content="Recommended"/>
+              <Button x:Name="BtnMinimal" Style="{StaticResource Minor}" Content="Minimal"/>
+              <Button x:Name="BtnClear" Style="{StaticResource Minor}" Content="Clear"/>
+              <Border Width="1" Background="{StaticResource Stroke}" Margin="6,3,12,3"/>
+              <ToggleButton x:Name="FreshToggle" Style="{StaticResource Chip}" Content="Fresh-install only" Margin="0"/>
+            </StackPanel>
+            <WrapPanel x:Name="CategoryChips"/>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+              <TextBlock Text="Source" Foreground="{StaticResource Muted}" FontSize="11.5" VerticalAlignment="Top" Margin="2,5,12,0"/>
+              <WrapPanel x:Name="SourceChips"/>
+            </StackPanel>
+          </StackPanel>
+          <!-- cards -->
+          <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,4,10,0">
+            <StackPanel x:Name="ListHost"/>
+          </ScrollViewer>
+          <TextBlock x:Name="StatusText" Grid.Row="3" Text="Ready." Foreground="{StaticResource Muted}" FontSize="12.5" Margin="3,12,0,0"/>
+        </Grid>
+      </Grid>
+    </DockPanel>
+
+    <!-- confirm overlay -->
+    <Grid x:Name="ConfirmOverlay" Background="#CC0A0B0E" Visibility="Collapsed">
+      <Border Width="460" CornerRadius="12" Background="{StaticResource Card}" BorderBrush="{StaticResource Accent}" BorderThickness="1" Padding="26" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel>
+          <TextBlock Text="Confirm" Foreground="{StaticResource Accent2}" FontSize="12.5" FontWeight="SemiBold"/>
+          <TextBlock x:Name="ConfirmText" Text="" Foreground="{StaticResource Text}" FontSize="15" TextWrapping="Wrap" Margin="0,10,0,20"/>
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="BtnConfirmNo" Style="{StaticResource Minor}" Content="Cancel" Width="110" Height="36"/>
+            <Button x:Name="BtnConfirmYes" Style="{StaticResource Primary}" Content="Apply" Width="130" Margin="8,0,0,0"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>
