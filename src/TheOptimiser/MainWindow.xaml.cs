@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     private List<InstalledProgram> _programs = new();
     private bool _programsLoaded;
     private string _programsView = "list";   // "list" (compact) | "card"
+    private readonly System.Windows.Threading.DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(160) };
     private List<CleanTarget> _cleanTargets = new();
     private bool _cleanScanned;
     private InstalledProgram? _leftoverApp;
@@ -52,7 +53,10 @@ public partial class MainWindow : Window
         BtnMin.Click += (_, _) => WindowState = WindowState.Minimized;
         BtnMax.Click += (_, _) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         BtnClose.Click += (_, _) => Close();
-        SearchBox.TextChanged += (_, _) => Repopulate();
+        // debounce search so the list isn't rebuilt on every keystroke
+        _searchTimer.Tick += (_, _) => { _searchTimer.Stop(); Repopulate(); };
+        SearchBox.TextChanged += (_, _) => { _searchTimer.Stop(); _searchTimer.Start(); };
+        SmoothScroll.Enable(MainScroll);
 
         BtnRecommended.Click += (_, _) => ApplyPreset(g => g.Recommended);
         BtnMinimal.Click += (_, _) => ApplyPreset(g => g.Category == "Essential Tweaks");
@@ -558,6 +562,8 @@ public partial class MainWindow : Window
     // ---- card builders ----
     private static readonly SolidColorBrush SelBg = Hex("#FF112019");
     private static SolidColorBrush Hex(string h) { var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(h)); b.Freeze(); return b; }
+    private static readonly Geometry CheckGeom = FreezeGeom(Geometry.Parse("M 0 5 L 4 9 L 11 1"));
+    private static Geometry FreezeGeom(Geometry g) { g.Freeze(); return g; }
 
     private Border BuildCard(string title, string desc, ImageSource? logo, string letter, Brush letterBg,
                              bool selected, bool? installed, Action<bool> onToggle, bool asTile = false, bool freshInstall = false)
@@ -618,7 +624,7 @@ public partial class MainWindow : Window
         if (asTile)
         {
             var badge = new Border { Width = 20, Height = 20, CornerRadius = new CornerRadius(10), Background = Res("Accent"), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Visibility = sel ? Visibility.Visible : Visibility.Collapsed };
-            badge.Child = new Viewbox { Width = 11, Height = 11, Child = new System.Windows.Shapes.Path { Data = Geometry.Parse("M 0 5 L 4 9 L 11 1"), Stroke = Brushes.White, StrokeThickness = 2, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round } };
+            badge.Child = new Viewbox { Width = 11, Height = 11, Child = new System.Windows.Shapes.Path { Data = CheckGeom, Stroke = Brushes.White, StrokeThickness = 2, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round } };
             Grid.SetRowSpan(badge, 2);
             g.Children.Add(badge);
 

@@ -93,7 +93,7 @@
             </StackPanel>
           </StackPanel>
           <!-- cards -->
-          <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,4,10,0">
+          <ScrollViewer x:Name="MainScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,4,10,0">
             <StackPanel x:Name="ListHost"/>
           </ScrollViewer>
           <TextBlock x:Name="StatusText" Grid.Row="3" Text="Ready." Foreground="{StaticResource Muted}" FontSize="12.5" Margin="3,12,0,0"/>
