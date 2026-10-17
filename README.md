@@ -52,5 +52,5 @@ Win11Debloat (Raphire), Bloatynosy (builtbybel), PC-Tuning (valleyofdoom), Sophi
 Winhance (memstechtips). Each remains the property of its authors under its own licence; all credit to them.
 
 Provided "as is", without warranty. You use it at your own risk. Not affiliated with Microsoft.
-See `AUDIT.md` for the full reverse-engineering / safety audit of the source tools and a comparison
+See `docs/AUDIT.md` for the full reverse-engineering / safety audit of the source tools and a comparison
 against a closed-source competitor (eclean).

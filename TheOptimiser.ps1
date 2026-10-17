@@ -1855,7 +1855,7 @@ function Build-OptimiserWindow {
     $G.ui.ViewGrid.Add_Unchecked({ $G=$global:gui; if (-not $G.ui.ViewList.IsChecked) { $G.ui.ViewGrid.IsChecked=$true } })
 
     # window + taskbar icon
-    try { $icoPath = Join-Path $script:Root 'TheOptimiser.ico'; if (Test-Path $icoPath) { $win.Icon = New-Object Windows.Media.Imaging.BitmapImage ([Uri]$icoPath) } } catch {}
+    try { $icoPath = Join-Path $script:Root 'assets\TheOptimiser.ico'; if (Test-Path $icoPath) { $win.Icon = New-Object Windows.Media.Imaging.BitmapImage ([Uri]$icoPath) } } catch {}
 
     if (Test-Admin) { $G.ui.AdminText.Text = 'administrator'; $G.ui.AdminDot.Fill = $win.FindResource('Ok') }
     $G.ui.BuildText.Text = "build $($script:Build)"

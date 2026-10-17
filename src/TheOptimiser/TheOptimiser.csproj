@@ -10,7 +10,7 @@
     <AssemblyName>TheOptimiser</AssemblyName>
     <RootNamespace>TheOptimiser</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <ApplicationIcon>..\..\TheOptimiser.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\assets\TheOptimiser.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
