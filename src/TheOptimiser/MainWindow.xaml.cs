@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private bool _appxScanned;
     private List<InstalledProgram> _programs = new();
     private bool _programsLoaded;
+    private string _programsView = "list";   // "list" (compact) | "card"
     private List<CleanTarget> _cleanTargets = new();
     private bool _cleanScanned;
     private InstalledProgram? _leftoverApp;
@@ -179,35 +180,80 @@ public partial class MainWindow : Window
         var q = (SearchBox.Text ?? "").Trim();
         var items = _programs.Where(p => q.Length == 0 || Match(p.Name, q) || Match(p.Publisher, q)).ToList();
         if (_programsLoaded) SectionSub.Text = $"{_programs.Count} installed programs - uninstall, then clean its leftovers";
-        AddHeader("Installed programs", items.Count);
-        foreach (var p in items) { var prog = p; ListHost.Children.Add(BuildProgramRow(prog)); }
+        ListHost.Children.Add(BuildProgramsHeader(items.Count));
+        bool compact = _programsView == "list";
+        foreach (var p in items) { var prog = p; ListHost.Children.Add(BuildProgramRow(prog, compact)); }
         UpdateCount();
     }
 
-    private Border BuildProgramRow(InstalledProgram p)
+    // Header row for Programs: "INSTALLED PROGRAMS n" on the left, a List/Card view switch on the right.
+    private UIElement BuildProgramsHeader(int count)
     {
-        var card = new Border { CornerRadius = new CornerRadius(10), Padding = new Thickness(14, 10, 12, 10), Margin = new Thickness(0, 0, 10, 8), Background = Res("Card"), BorderThickness = new Thickness(1.2), BorderBrush = Res("Stroke") };
-        var g = new Grid();
-        foreach (var w in new[] { GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto })
-            g.ColumnDefinitions.Add(new ColumnDefinition { Width = w });
+        var g = new Grid { Margin = new Thickness(3, 8, 10, 10) };
+        g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        g.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        g.Children.Add(new TextBlock { Text = $"INSTALLED PROGRAMS    {count}", Foreground = Res("Accent2"), FontSize = 11.5, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
+        var views = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        foreach (var label in new[] { "List", "Card" })
+        {
+            var m = label.ToLowerInvariant();
+            var chip = new ToggleButton { Style = (Style)FindResource("Chip"), Content = label, IsChecked = _programsView == m, Margin = new Thickness(0, 0, 6, 0) };
+            chip.Checked += (_, _) => { if (_programsView != m) { _programsView = m; PopulatePrograms(); } };
+            chip.Unchecked += (s, _) => { if (_programsView == m) ((ToggleButton)s).IsChecked = true; };
+            views.Children.Add(chip);
+        }
+        Grid.SetColumn(views, 1); g.Children.Add(views);
+        return g;
+    }
 
-        var icon = new Border { Width = 34, Height = 34, CornerRadius = new CornerRadius(8), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 13, 0) };
-        if (p.Logo != null) icon.Background = new ImageBrush(p.Logo) { Stretch = Stretch.Uniform };
-        else { icon.Background = ColorFor(p.Name); icon.Child = new TextBlock { Text = Initial(p.Name), Foreground = Res("Text"), FontSize = 14, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }; }
-        Grid.SetColumn(icon, 0); g.Children.Add(icon);
-
-        var sp = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-        sp.Children.Add(new TextBlock { Text = p.Name, Foreground = Res("Text"), FontSize = 13, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis });
-        var meta = string.Join("     ", new[] { p.Publisher, p.Version }.Where(x => !string.IsNullOrWhiteSpace(x)));
-        sp.Children.Add(new TextBlock { Text = meta, Foreground = Res("Muted"), FontSize = 11, Margin = new Thickness(0, 2, 10, 0), TextTrimming = TextTrimming.CharacterEllipsis });
-        Grid.SetColumn(sp, 1); g.Children.Add(sp);
-
+    private Border BuildProgramRow(InstalledProgram p, bool compact)
+    {
+        var meta = string.Join(compact ? "    " : "     ", new[] { p.Publisher, p.Version }.Where(x => !string.IsNullOrWhiteSpace(x)));
         var btn = new Button { Style = (Style)FindResource("Minor"), Content = "Uninstall", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0) };
         btn.Click += (_, _) => StartUninstall(p);
-        Grid.SetColumn(btn, 2); g.Children.Add(btn);
 
-        card.Child = g;
-        return card;
+        if (compact)
+        {
+            var card = new Border { CornerRadius = new CornerRadius(6), Padding = new Thickness(10, 4, 8, 4), Margin = new Thickness(0, 0, 10, 3), Background = Res("Card"), BorderThickness = new Thickness(1), BorderBrush = Res("Stroke") };
+            var g = new Grid();
+            foreach (var w in new[] { GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto, GridLength.Auto })
+                g.ColumnDefinitions.Add(new ColumnDefinition { Width = w });
+            var ic = MakeProgramIcon(p, 22, 11);
+            ic.Margin = new Thickness(0, 0, 10, 0);
+            Grid.SetColumn(ic, 0); g.Children.Add(ic);
+            var name = new TextBlock { Text = p.Name, Foreground = Res("Text"), FontSize = 12.5, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+            Grid.SetColumn(name, 1); g.Children.Add(name);
+            var mt = new TextBlock { Text = meta, Foreground = Res("Muted"), FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 12, 0), TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 280 };
+            Grid.SetColumn(mt, 2); g.Children.Add(mt);
+            Grid.SetColumn(btn, 3); g.Children.Add(btn);
+            card.Child = g;
+            return card;
+        }
+        else
+        {
+            var card = new Border { CornerRadius = new CornerRadius(10), Padding = new Thickness(14, 10, 12, 10), Margin = new Thickness(0, 0, 10, 8), Background = Res("Card"), BorderThickness = new Thickness(1.2), BorderBrush = Res("Stroke") };
+            var g = new Grid();
+            foreach (var w in new[] { GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto })
+                g.ColumnDefinitions.Add(new ColumnDefinition { Width = w });
+            var ic = MakeProgramIcon(p, 34, 14);
+            ic.Margin = new Thickness(0, 0, 13, 0);
+            Grid.SetColumn(ic, 0); g.Children.Add(ic);
+            var sp = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+            sp.Children.Add(new TextBlock { Text = p.Name, Foreground = Res("Text"), FontSize = 13, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis });
+            sp.Children.Add(new TextBlock { Text = meta, Foreground = Res("Muted"), FontSize = 11, Margin = new Thickness(0, 2, 10, 0), TextTrimming = TextTrimming.CharacterEllipsis });
+            Grid.SetColumn(sp, 1); g.Children.Add(sp);
+            Grid.SetColumn(btn, 2); g.Children.Add(btn);
+            card.Child = g;
+            return card;
+        }
+    }
+
+    private Border MakeProgramIcon(InstalledProgram p, double size, double fontSize)
+    {
+        var icon = new Border { Width = size, Height = size, CornerRadius = new CornerRadius(size / 4.25), VerticalAlignment = VerticalAlignment.Center };
+        if (p.Logo != null) icon.Background = new ImageBrush(p.Logo) { Stretch = Stretch.Uniform };
+        else { icon.Background = ColorFor(p.Name); icon.Child = new TextBlock { Text = Initial(p.Name), Foreground = Res("Text"), FontSize = fontSize, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }; }
+        return icon;
     }
 
     private void StartUninstall(InstalledProgram p)
@@ -337,7 +383,7 @@ public partial class MainWindow : Window
     {
         _section = "Debloat";
         SectionTitle.Text = "Debloat";
-        SectionSub.Text = _appxScanned ? "remove built-in Store apps - installed ones are highlighted" : "scanning installed apps...";
+        SectionSub.Text = _appxScanned ? "built-in Store apps installed on this PC - tap to select, then Apply" : "scanning installed apps...";
         FilterPanel.Visibility = Visibility.Collapsed;
         SetApply(true);
         PopulateDebloat();
@@ -438,13 +484,24 @@ public partial class MainWindow : Window
     private void PopulateDebloat()
     {
         ListHost.Children.Clear();
+        if (!_appxScanned)
+        {
+            ListHost.Children.Add(new TextBlock { Text = "Scanning installed apps...", Foreground = Res("Muted"), FontSize = 13, Margin = new Thickness(6, 16, 0, 0) });
+            UpdateCount(); return;
+        }
         var q = (SearchBox.Text ?? "").Trim();
-        IEnumerable<DebloatApp> items = _cat.Debloat;
+        IEnumerable<DebloatApp> items = _cat.Debloat.Where(a => _appx.TryGetValue(a.Id, out var info) && info.Installed);
         if (q.Length > 0) items = items.Where(a => Match(a.Name, q) || Match(a.Id, q));
+        var list = items.ToList();
+        if (list.Count == 0)
+        {
+            ListHost.Children.Add(new TextBlock { Text = q.Length > 0 ? "No installed built-in apps match your search." : "None of these built-in Store apps are installed on this PC.", Foreground = Res("Muted"), FontSize = 13, Margin = new Thickness(6, 16, 0, 0) });
+            UpdateCount(); return;
+        }
         var safetyLabel = new Dictionary<string, string> { ["safe"] = "Safe to remove", ["optional"] = "Optional", ["unsafe"] = "Caution - part of Windows" };
         foreach (var key in new[] { "safe", "optional", "unsafe" })
         {
-            var grp = items.Where(a => a.Safety == key).ToList();
+            var grp = list.Where(a => a.Safety == key).ToList();
             if (grp.Count == 0) continue;
             AddHeader(safetyLabel[key], grp.Count);
             var wrap = new WrapPanel();
@@ -452,9 +509,8 @@ public partial class MainWindow : Window
             {
                 var app = a;
                 _appx.TryGetValue(app.Id, out var info);
-                bool? installed = _appxScanned ? (info?.Installed ?? false) : null;
                 wrap.Children.Add(BuildCard(app.Name, app.Description, info?.Logo, Initial(app.Name), ColorFor(app.Name),
-                    app.Selected, installed, on => { app.Selected = on; UpdateCount(); }, asTile: true));
+                    app.Selected, null, on => { app.Selected = on; UpdateCount(); }, asTile: true));
             }
             ListHost.Children.Add(wrap);
         }
