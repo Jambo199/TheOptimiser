@@ -14,4 +14,4 @@ dist/
 /TheOptimiser.exe
 
 # Preview/screenshot renders - UI scratch, and some show the installed-program list - kept local, out of the repo
-preview-*.png
+Previews/
