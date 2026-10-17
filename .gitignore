@@ -9,8 +9,9 @@ desktop.ini
 winapp2.ini
 update.json
 
-# Built C# app - built locally (publish straight to root), out of the repo
-/TheOptimiser.exe
+# Built C# app - built locally (publish straight to root), out of the repo.
+# Glob also covers throwaway TheOptimiser-test.exe builds used to A/B UI tweaks.
+/TheOptimiser*.exe
 
 # Preview/screenshot renders - UI scratch, and some show the installed-program list - kept local, out of the repo
 Previews/
