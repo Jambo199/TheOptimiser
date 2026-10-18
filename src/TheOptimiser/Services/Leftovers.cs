@@ -123,6 +123,7 @@ public static class Leftovers
             {
                 if (it.Kind == "registry")
                 {
+                    if (it.Path.Contains('"') || it.Path.Any(char.IsControl)) continue;   // never feed a shell-breaking key path to reg.exe
                     var bk = Path.Combine(backupDir, $"left_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString("N")[..6]}.reg");
                     RunReg($"export \"{it.Path}\" \"{bk}\" /y");
                     if (File.Exists(bk)) op.Items.Add(new JournalItem { Kind = "regkey-export", Backup = bk });

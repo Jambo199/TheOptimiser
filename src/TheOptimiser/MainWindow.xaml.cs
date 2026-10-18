@@ -19,7 +19,8 @@ public partial class MainWindow : Window
     private string _section = "Tweaks";
     private string _category = "All";
     private string _source = "All";
-    private bool _fresh;
+    private enum FreshMode { All, Only, Hide }
+    private FreshMode _freshMode = FreshMode.All;
     private Action? _pending;
     private Dictionary<string, AppInfo> _appx = new();
     private bool _appxScanned;
@@ -63,8 +64,14 @@ public partial class MainWindow : Window
         BtnRecommended.Click += (_, _) => ApplyPreset(g => g.Recommended);
         BtnMinimal.Click += (_, _) => ApplyPreset(g => g.Category == "Essential Tweaks");
         BtnClear.Click += (_, _) => ApplyPreset(_ => false);
-        FreshToggle.Checked += (_, _) => { _fresh = true; PopulateTweaks(); };
-        FreshToggle.Unchecked += (_, _) => { _fresh = false; PopulateTweaks(); };
+        FreshToggle.Content = "Fresh-install: all";
+        FreshToggle.Click += (_, _) =>
+        {
+            _freshMode = _freshMode switch { FreshMode.All => FreshMode.Only, FreshMode.Only => FreshMode.Hide, _ => FreshMode.All };
+            FreshToggle.Content = _freshMode switch { FreshMode.Only => "Fresh-install: only", FreshMode.Hide => "Fresh-install: hidden", _ => "Fresh-install: all" };
+            FreshToggle.IsChecked = _freshMode != FreshMode.All;
+            PopulateTweaks();
+        };
 
         NavTweaks.Checked += (_, _) => ShowTweaks();
         NavDebloat.Checked += (_, _) => ShowDebloat();
@@ -469,7 +476,8 @@ public partial class MainWindow : Window
         IEnumerable<TweakGroup> groups = _tweakGroups;
         if (_category != "All") groups = groups.Where(g => g.Category == _category);
         if (_source != "All") groups = groups.Where(g => g.Sources.Contains(_source));
-        if (_fresh) groups = groups.Where(g => g.FreshInstall);
+        if (_freshMode == FreshMode.Only) groups = groups.Where(g => g.FreshInstall);
+        else if (_freshMode == FreshMode.Hide) groups = groups.Where(g => !g.FreshInstall);
         if (q.Length > 0) groups = groups.Where(g => Match(g.Description, q));
 
         foreach (var catGrp in groups.GroupBy(g => g.Category).OrderBy(x => x.Key))

@@ -60,6 +60,15 @@ public static class RegistryService
         }
     }
 
+    // Dry run for --validate: verifies the hive, path and value coercion without touching the registry.
+    public static string? Validate(string hive, string path, string name, string type, string value)
+    {
+        try { Root(hive); } catch (Exception e) { return e.Message; }
+        if (string.IsNullOrWhiteSpace(path)) return "empty path";
+        try { Coerce(type, value); } catch (Exception e) { return $"bad {type} value '{value}': {e.Message}"; }
+        return null;
+    }
+
     private static RegistryValueKind KindOf(string t) => t switch
     {
         "DWord" => RegistryValueKind.DWord,
@@ -79,8 +88,18 @@ public static class RegistryService
         _ => v
     };
 
-    private static byte[] ParseBytes(string v) =>
-        v.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToByte(x, 16)).ToArray();
+    private static byte[] ParseBytes(string v)
+    {
+        var parts = v.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1 && parts[0].Length > 2 && parts[0].Length % 2 == 0)   // continuous hex like "9012038010000000"
+        {
+            var s = parts[0];
+            var b = new byte[s.Length / 2];
+            for (int i = 0; i < b.Length; i++) b[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
+            return b;
+        }
+        return parts.Select(x => Convert.ToByte(x, 16)).ToArray();
+    }
 
     private static string ValToString(object v) => v switch
     {

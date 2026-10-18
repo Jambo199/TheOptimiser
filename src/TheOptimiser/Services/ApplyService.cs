@@ -14,7 +14,10 @@ public static class ApplyService
         try
         {
             foreach (var w in writes)
+            {
+                if (RegistryService.Validate(w.hive, w.path, w.name, w.type, w.value) != null) continue;   // skip malformed; one bad tweak never fails the batch
                 op.Items.Add(RegistryService.Set(w.hive, w.path, w.name, w.type, w.value));
+            }
         }
         catch
         {
@@ -65,6 +68,7 @@ public static class ApplyService
         foreach (var id in ids)
             try
             {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"^[A-Za-z0-9.\-_+]+$")) continue;   // winget ids only; never raw args
                 Process.Start(new ProcessStartInfo("winget", $"install --id {id} --accept-source-agreements --accept-package-agreements -e") { UseShellExecute = true });
                 n++;
             }

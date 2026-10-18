@@ -15,6 +15,13 @@ public partial class App : Application
             return;
         }
 
+        if (e.Args.Length >= 1 && e.Args[0] == "--validate")
+        {
+            CatalogValidate.Run();
+            Shutdown();
+            return;
+        }
+
         // headless preview: TheOptimiser.exe --preview <png> [section]
         if (e.Args.Length >= 2 && e.Args[0] == "--preview")
         {
