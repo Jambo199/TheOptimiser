@@ -32,15 +32,17 @@ public static class UpdateChecker
             return new Result { Status = "unconfigured", Message = $"No signed-update source set. Drop an update.json ({{url, pubkey}}) at {ConfigPath} to enable." };
         try
         {
-            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-            var man = await http.GetStringAsync(cfg.url);
+            if (!cfg.url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return new Result { Status = "error", Message = "Update URL must be https." };
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20), MaxResponseContentBufferSize = 4 * 1024 * 1024 };
+            var manBytes = await http.GetByteArrayAsync(cfg.url);
             var sig = await http.GetStringAsync(cfg.url + ".minisig");
             var sigLine = sig.Split('\n').FirstOrDefault(l => l.Trim().Length > 0
                 && !l.StartsWith("untrusted comment:") && !l.StartsWith("trusted comment:")) ?? "";
-            var v = Minisign.Verify(cfg.pubkey!, sigLine, Encoding.UTF8.GetBytes(man));
+            var v = Minisign.Verify(cfg.pubkey!, sigLine, manBytes);
             if (!v.ok) return new Result { Status = "bad-signature", Message = $"Update manifest signature INVALID ({v.why}). Ignored." };
 
-            Manifest? info = null; try { info = JsonSerializer.Deserialize<Manifest>(man); } catch { }
+            Manifest? info = null; try { info = JsonSerializer.Deserialize<Manifest>(Encoding.UTF8.GetString(manBytes)); } catch { }
             var ver = string.IsNullOrEmpty(info?.version) ? "(signed, see manifest)" : info!.version!;
             bool newer = IsNewer(ver, About.Version);
             var msg = newer

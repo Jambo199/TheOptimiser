@@ -29,7 +29,7 @@ public static class RegistryService
             if (ro != null)
             {
                 item.ExistedKey = true;
-                var cur = ro.GetValue(vname, null);
+                var cur = ro.GetValue(vname, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
                 if (cur != null)
                 {
                     item.Existed = true;

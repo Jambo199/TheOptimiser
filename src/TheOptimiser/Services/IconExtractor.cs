@@ -23,6 +23,7 @@ public static class IconExtractor
         foreach (var (path, index) in Candidates(displayIcon, location, uninstall))
         {
             if (string.IsNullOrEmpty(path)) continue;
+            if (path.StartsWith(@"\\")) continue;   // never auth to a remote share during a scan (NTLM hash leak)
             if (!File.Exists(path)) continue;
             var img = Load(path, index);
             if (img != null) return img;
@@ -38,7 +39,7 @@ public static class IconExtractor
         var exe = ExeFrom(uninstall);
         if (exe != null) yield return (exe, 0);
 
-        if (!string.IsNullOrWhiteSpace(location) && Directory.Exists(location))
+        if (!string.IsNullOrWhiteSpace(location) && !location.StartsWith(@"\\") && Directory.Exists(location))
         {
             string? pick = null;
             try { pick = Directory.EnumerateFiles(location, "*.exe").FirstOrDefault(f => !f.Contains("unins", StringComparison.OrdinalIgnoreCase)); } catch { }

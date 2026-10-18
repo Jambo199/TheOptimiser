@@ -53,12 +53,13 @@ public static class Cleaner
         {
             var backupDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TheOptimiser", "backups");
             Directory.CreateDirectory(backupDir);
+            int bi = 0;
             foreach (var r in t.Reg)
             {
                 if (!RegKeyExists(r)) continue;
-                var bk = Path.Combine(backupDir, $"mru_{t.Id}_{DateTime.Now:yyyyMMddHHmmss}.reg".Replace(" ", "_"));
-                RunReg($"export \"{r}\" \"{bk}\" /y");
-                if (File.Exists(bk)) op.Items.Add(new JournalItem { Kind = "regkey-export", Backup = bk });
+                var bk = Path.Combine(backupDir, $"mru_{t.Id}_{DateTime.Now:yyyyMMddHHmmss}_{bi++}_{Guid.NewGuid().ToString("N")[..6]}.reg".Replace(" ", "_"));
+                if (RunReg($"export \"{r}\" \"{bk}\" /y") != 0 || !File.Exists(bk)) continue;   // no backup -> don't delete
+                op.Items.Add(new JournalItem { Kind = "regkey-export", Backup = bk });
                 RunReg($"delete \"{r}\" /f");
             }
         }
@@ -110,6 +111,7 @@ public static class Cleaner
         long b = 0; int c = 0;
         foreach (var e in Expand(pattern))
         {
+            if (Skip(e)) continue;
             if (Directory.Exists(e))
                 foreach (var f in SafeFiles(e)) { try { b += new FileInfo(f).Length; c++; } catch { } }
             else if (File.Exists(e)) { try { b += new FileInfo(e).Length; c++; } catch { } }
@@ -121,6 +123,7 @@ public static class Cleaner
     {
         foreach (var e in Expand(pattern))
         {
+            if (Skip(e)) continue;
             try
             {
                 if (Directory.Exists(e))
@@ -137,6 +140,14 @@ public static class Cleaner
     private static IEnumerable<string> SafeFiles(string dir)
     {
         try { return Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories); } catch { return Array.Empty<string>(); }
+    }
+
+    // Never follow a junction/symlink (a planted reparse point under a cache root would redirect deletes
+    // to anywhere when elevated) and never operate on a bare drive root.
+    private static bool Skip(string p)
+    {
+        if (p.Length <= 3) return true;   // "C:\"
+        try { return (File.GetAttributes(p) & FileAttributes.ReparsePoint) != 0; } catch { return true; }
     }
 
     [DllImport("shell32.dll")] private static extern int SHEmptyRecycleBin(IntPtr hwnd, string? rootPath, uint flags);
@@ -158,8 +169,9 @@ public static class Cleaner
         try { using var k = root.OpenSubKey(sub); return k != null; } catch { return false; }
     }
 
-    private static void RunReg(string args)
+    private static readonly string RegExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "reg.exe");
+    private static int RunReg(string args)
     {
-        try { var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("reg", args) { CreateNoWindow = true, UseShellExecute = false }); p?.WaitForExit(); } catch { }
+        try { var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(RegExe, args) { CreateNoWindow = true, UseShellExecute = false }); p?.WaitForExit(); return p?.ExitCode ?? -1; } catch { return -1; }
     }
 }

@@ -83,6 +83,10 @@ public partial class MainWindow : Window
         NavClean.Checked += (_, _) => ShowClean();
         NavUpdates.Checked += (_, _) => ShowUpdates();
 
+        // staggered entrance each time you switch section (runs after the ShowX handlers above populate the list)
+        foreach (var nav in new[] { NavTweaks, NavDebloat, NavInstall, NavPrograms, NavClean, NavServices, NavUpdates, NavExpert, NavUndo })
+            nav.Checked += (_, _) => AnimateListIn();
+
         BtnApply.Click += (_, _) => OnApply();
         BtnConfirmNo.Click += (_, _) => { ConfirmOverlay.Visibility = Visibility.Collapsed; _pending = null; };
         BtnConfirmYes.Click += (_, _) => { ConfirmOverlay.Visibility = Visibility.Collapsed; var p = _pending; _pending = null; p?.Invoke(); };
@@ -93,10 +97,56 @@ public partial class MainWindow : Window
         BtnElevate.Visibility = admin ? Visibility.Collapsed : Visibility.Visible;
         BtnElevate.Click += (_, _) => { if (AdminHelper.RelaunchElevated()) Close(); };
 
+        PlayLaunchAnimation();
         ScanAppxInBackground();
     }
 
     private SolidColorBrush Res(string key) => (SolidColorBrush)FindResource(key);
+
+    // Subtle zoom + fade of the whole window when it opens. Only runs when the window is actually shown;
+    // the headless preview/selftest never fire Loaded, so Root stays fully visible there.
+    private void PlayLaunchAnimation()
+    {
+        Loaded += (_, _) =>
+        {
+            Root.RenderTransformOrigin = new Point(0.5, 0.42);
+            var sc = new ScaleTransform(0.985, 0.985);
+            Root.RenderTransform = sc;
+            Root.Opacity = 0;
+            var dur = TimeSpan.FromMilliseconds(420);
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var fade = new DoubleAnimation(0, 1, dur) { EasingFunction = ease };
+            var zoom = new DoubleAnimation(0.985, 1, dur) { EasingFunction = ease };
+            foreach (Timeline a in new Timeline[] { fade, zoom }) Timeline.SetDesiredFrameRate(a, SmoothScroll.Fps);
+            Root.BeginAnimation(UIElement.OpacityProperty, fade);
+            sc.BeginAnimation(ScaleTransform.ScaleXProperty, zoom);
+            sc.BeginAnimation(ScaleTransform.ScaleYProperty, zoom);
+        };
+    }
+
+    // Staggered fade + rise of the list items when a section is shown (children's own transforms,
+    // independent of the SmoothScroll transform on ListHost itself).
+    private void AnimateListIn()
+    {
+        if (!IsLoaded) return;   // skip in headless preview / before the window is shown (would render blank)
+        int i = 0;
+        foreach (UIElement child in ListHost.Children)
+        {
+            var tt = new TranslateTransform(0, 10);
+            child.RenderTransform = tt;
+            child.Opacity = 0;
+            var begin = TimeSpan.FromMilliseconds(Math.Min(i, 10) * 30);
+            var dur = TimeSpan.FromMilliseconds(240);
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var fade = new DoubleAnimation(0, 1, dur) { BeginTime = begin, EasingFunction = ease };
+            var rise = new DoubleAnimation(10, 0, dur) { BeginTime = begin, EasingFunction = ease };
+            Timeline.SetDesiredFrameRate(fade, SmoothScroll.Fps);
+            Timeline.SetDesiredFrameRate(rise, SmoothScroll.Fps);
+            child.BeginAnimation(UIElement.OpacityProperty, fade);
+            tt.BeginAnimation(TranslateTransform.YProperty, rise);
+            i++;
+        }
+    }
 
     private void SetApply(bool visible, string label = "Apply")
     {
@@ -834,10 +884,12 @@ public partial class MainWindow : Window
             ListHost.Children.Add(new TextBlock { Text = "No operations to undo yet.", Foreground = Res("Muted"), FontSize = 13, Margin = new Thickness(6, 16, 0, 0) });
         foreach (var (path, op) in ops)
         {
-            var p = path;
+            var p = path; var title = op.Title;
+            int count = op.Items?.Count ?? 0;   // a hand-crafted journal with null Items must not crash the UI
             var when = ""; try { when = DateTime.Parse(op.Started).ToString("yyyy-MM-dd HH:mm"); } catch { }
-            ListHost.Children.Add(BuildUndoRow(op.Title, $"{op.Items.Count} change(s)     {when}",
-                () => { int n = JournalStore.Revert(p); Status($"Reverted {n} change(s)."); PopulateUndo(); }));
+            ListHost.Children.Add(BuildUndoRow(title, $"{count} change(s)     {when}",
+                () => ShowConfirm($"Revert \"{title}\" ({count} change(s))? Only revert an operation you recognise - this restores registry values and files from backups.",
+                    () => { int n = JournalStore.Revert(p); Status($"Reverted {n} change(s)."); PopulateUndo(); })));
         }
         UpdateCount();
     }

@@ -55,7 +55,8 @@ public static class AppIcons
                 await Gate.WaitAsync();
                 try { bytes = await Http.GetByteArrayAsync($"https://www.google.com/s2/favicons?domain={Uri.EscapeDataString(domain)}&sz=64"); }
                 finally { Gate.Release(); }
-                if (bytes.Length > 0) await File.WriteAllBytesAsync(file, bytes);
+                if (bytes.Length < 8 || bytes[0] != 0x89 || bytes[1] != 0x50 || bytes[2] != 0x4E || bytes[3] != 0x47) { Mem[a.Id] = null; return null; }   // not a PNG (error / captive-portal page): don't cache or decode
+                await File.WriteAllBytesAsync(file, bytes);
             }
             img = Decode(bytes);
         }

@@ -73,8 +73,10 @@ public static class Ed25519
             if (pub.Length != 32 || sig.Length != 64) return false;
             var mask = BigInteger.Pow(2, 255) - 1;
             var ay = LE(pub) & mask; var asign = (pub[31] >> 7) & 1;
+            if (ay >= P) return false;                      // reject non-canonical y (y >= p)
             var ax = RecoverX(ay, asign); if (ax == null) return false;
             var a = new[] { ax.Value, ay, BigInteger.One, Mod(ax.Value * ay) };
+            if (Mod(MulPoint(8, a)[0]) == 0) return false;  // reject small-order public keys (8*A is the identity -> any message would verify)
             var ry = LE(sig[0..32]) & mask; var rsign = (sig[31] >> 7) & 1;
             var rx = RecoverX(ry, rsign); if (rx == null) return false;
             var r = new[] { rx.Value, ry, BigInteger.One, Mod(rx.Value * ry) };
@@ -105,7 +107,8 @@ public static class Minisign
             var sg = Convert.FromBase64String(sigB64.Trim());
             if (pk.Length != 42 || sg.Length != 74) return (false, "bad key/sig length", "");
             var salg = Encoding.ASCII.GetString(sg, 0, 2);
-            if (salg != "Ed") return (false, $"unsupported sig algorithm '{salg}' (need legacy Ed)", "");
+            var palg = Encoding.ASCII.GetString(pk, 0, 2);
+            if (salg != "Ed" || palg != "Ed") return (false, "unsupported algorithm (need legacy Ed)", "");
             for (int i = 0; i < 8; i++) if (pk[2 + i] != sg[2 + i]) return (false, "key id mismatch", "");
             var ok = Ed25519.Verify(pk[10..42], message, sg[10..74]);
             return (ok, ok ? "verified" : "signature does not match", Convert.ToHexString(pk[2..10]));

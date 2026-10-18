@@ -28,7 +28,7 @@ public static class Leftovers
     public static string? Score(string text, string[] tokens, string appName)
     {
         var t = text.ToLowerInvariant();
-        if (!string.IsNullOrEmpty(appName) && t.Contains(appName.ToLowerInvariant())) return "High";
+        if (!string.IsNullOrEmpty(appName) && appName.Length >= 4 && t.Contains(appName.ToLowerInvariant())) return "High";   // short names over-match wildly
         var hit = tokens.Where(k => t.Contains(k.ToLowerInvariant())).ToList();
         if (hit.Count >= 2) return "High";
         if (hit.Count == 1) { var tok = hit[0]; return (tok.Length >= 5 && !Generic.Contains(tok)) ? "Medium" : "Low"; }
@@ -104,10 +104,12 @@ public static class Leftovers
 
         var order = new Dictionary<string, int> { ["High"] = 0, ["Medium"] = 1, ["Low"] = 2 };
         var seen = new HashSet<string>();
-        return found
+        var result = found
             .OrderBy(f => order[f.Score]).ThenBy(f => f.Path, StringComparer.OrdinalIgnoreCase)
             .Where(f => seen.Add((f.Kind + "|" + f.Path).ToLowerInvariant()))
             .ToList();
+        if (result.Count(f => f.Score == "High") > 15) foreach (var f in result) f.Selected = false;   // suspicious mass-match: never pre-tick
+        return result;
     }
 
     // Remove selected leftovers, backing each up so the whole lot is undoable.
@@ -125,8 +127,8 @@ public static class Leftovers
                 {
                     if (it.Path.Contains('"') || it.Path.Any(char.IsControl)) continue;   // never feed a shell-breaking key path to reg.exe
                     var bk = Path.Combine(backupDir, $"left_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString("N")[..6]}.reg");
-                    RunReg($"export \"{it.Path}\" \"{bk}\" /y");
-                    if (File.Exists(bk)) op.Items.Add(new JournalItem { Kind = "regkey-export", Backup = bk });
+                    if (RunReg($"export \"{it.Path}\" \"{bk}\" /y") != 0 || !File.Exists(bk)) continue;   // no backup -> don't delete
+                    op.Items.Add(new JournalItem { Kind = "regkey-export", Backup = bk });
                     RunReg($"delete \"{it.Path}\" /f");
                 }
                 else
@@ -142,9 +144,10 @@ public static class Leftovers
         return op;
     }
 
-    private static void RunReg(string args)
+    private static readonly string RegExe = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "reg.exe");
+    private static int RunReg(string args)
     {
-        try { var p = Process.Start(new ProcessStartInfo("reg", args) { CreateNoWindow = true, UseShellExecute = false }); p?.WaitForExit(); }
-        catch { }
+        try { var p = Process.Start(new ProcessStartInfo(RegExe, args) { CreateNoWindow = true, UseShellExecute = false }); p?.WaitForExit(); return p?.ExitCode ?? -1; }
+        catch { return -1; }
     }
 }

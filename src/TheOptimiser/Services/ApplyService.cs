@@ -18,13 +18,13 @@ public static class ApplyService
                 if (RegistryService.Validate(w.hive, w.path, w.name, w.type, w.value) != null) continue;   // skip malformed; one bad tweak never fails the batch
                 op.Items.Add(RegistryService.Set(w.hive, w.path, w.name, w.type, w.value));
             }
+            JournalStore.Save(op);   // inside the try: if the journal can't be saved, roll the writes back too (don't lie "nothing changed")
         }
         catch
         {
             for (int i = op.Items.Count - 1; i >= 0; i--) { try { RegistryService.Undo(op.Items[i]); } catch { } }
             throw;
         }
-        JournalStore.Save(op);
         return op;
     }
 
@@ -68,8 +68,8 @@ public static class ApplyService
         foreach (var id in ids)
             try
             {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"^[A-Za-z0-9.\-_+]+$")) continue;   // winget ids only; never raw args
-                Process.Start(new ProcessStartInfo("winget", $"install --id {id} --accept-source-agreements --accept-package-agreements -e") { UseShellExecute = true });
+                if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"\A[A-Za-z0-9][A-Za-z0-9.\-_+]*\z")) continue;   // winget ids only; must start alphanumeric; never raw args
+                Process.Start(new ProcessStartInfo("winget", $"install --id {id} --source winget --accept-source-agreements --accept-package-agreements -e") { UseShellExecute = true });
                 n++;
             }
             catch { }
