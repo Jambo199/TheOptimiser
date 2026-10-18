@@ -103,24 +103,48 @@ public partial class MainWindow : Window
 
     private SolidColorBrush Res(string key) => (SolidColorBrush)FindResource(key);
 
-    // Subtle zoom + fade of the whole window when it opens. Only runs when the window is actually shown;
-    // the headless preview/selftest never fire Loaded, so Root stays fully visible there.
+    public void HideSplash() => SplashOverlay.Visibility = Visibility.Collapsed;   // the headless preview skips the splash
+
+    // Launch splash: the logo pops in, the name + tagline follow, then the whole thing fades into the app.
+    // Only runs when the window is actually shown (the preview calls HideSplash and never fires Loaded).
     private void PlayLaunchAnimation()
     {
+        try   // show the real app icon in the circle; falls back to the "O" if assets\logo.png isn't beside the exe
+        {
+            var p = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "logo.png");
+            if (System.IO.File.Exists(p))
+            {
+                var bi = new BitmapImage();
+                bi.BeginInit(); bi.UriSource = new Uri(p); bi.CacheOption = BitmapCacheOption.OnLoad; bi.EndInit(); bi.Freeze();
+                SplashIcon.Source = bi;
+                SplashO.Visibility = Visibility.Collapsed;
+            }
+        }
+        catch { }
+
         Loaded += (_, _) =>
         {
-            Root.RenderTransformOrigin = new Point(0.5, 0.42);
-            var sc = new ScaleTransform(0.985, 0.985);
-            Root.RenderTransform = sc;
-            Root.Opacity = 0;
-            var dur = TimeSpan.FromMilliseconds(420);
-            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
-            var fade = new DoubleAnimation(0, 1, dur) { EasingFunction = ease };
-            var zoom = new DoubleAnimation(0.985, 1, dur) { EasingFunction = ease };
-            foreach (Timeline a in new Timeline[] { fade, zoom }) Timeline.SetDesiredFrameRate(a, SmoothScroll.Fps);
-            Root.BeginAnimation(UIElement.OpacityProperty, fade);
-            sc.BeginAnimation(ScaleTransform.ScaleXProperty, zoom);
-            sc.BeginAnimation(ScaleTransform.ScaleYProperty, zoom);
+            var fps = SmoothScroll.Fps;
+            void DFR(Timeline t) => Timeline.SetDesiredFrameRate(t, fps);
+            var eo = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            // 1) the icon pops in with a little overshoot
+            var lsc = new DoubleAnimation(0.5, 1, TimeSpan.FromMilliseconds(640)) { EasingFunction = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.6 } }; DFR(lsc);
+            var lop = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300)) { EasingFunction = eo }; DFR(lop);
+            SplashScale.BeginAnimation(ScaleTransform.ScaleXProperty, lsc);
+            SplashScale.BeginAnimation(ScaleTransform.ScaleYProperty, lsc);
+            SplashLogo.BeginAnimation(UIElement.OpacityProperty, lop);
+
+            // 2) then the name and tagline fade in under it
+            var nop = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(320)) { BeginTime = TimeSpan.FromMilliseconds(430), EasingFunction = eo }; DFR(nop);
+            var sop = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(320)) { BeginTime = TimeSpan.FromMilliseconds(560), EasingFunction = eo }; DFR(sop);
+            SplashName.BeginAnimation(UIElement.OpacityProperty, nop);
+            SplashSub.BeginAnimation(UIElement.OpacityProperty, sop);
+
+            // 3) then the splash fades away to reveal the app
+            var outA = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(450)) { BeginTime = TimeSpan.FromMilliseconds(1350), EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } }; DFR(outA);
+            outA.Completed += (_, _) => SplashOverlay.Visibility = Visibility.Collapsed;
+            SplashOverlay.BeginAnimation(UIElement.OpacityProperty, outA);
         };
     }
 

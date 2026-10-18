@@ -12,6 +12,7 @@ public static class PreviewRenderer
     public static void Render(string path, string section = "Tweaks", string? search = null, int w = 1280, int h = 840)
     {
         var win = new MainWindow();
+        win.HideSplash();
         win.SelectSection(section);
         if (!string.IsNullOrEmpty(search)) win.SetSearch(search);
         if (section is "Debloat" or "Install") win.PreselectForPreview();

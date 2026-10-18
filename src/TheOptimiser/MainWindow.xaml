@@ -114,5 +114,21 @@
         </StackPanel>
       </Border>
     </Grid>
+
+    <!-- launch splash: the logo pops in, the name follows, then it fades into the app -->
+    <Grid x:Name="SplashOverlay" Background="#FF0E0F13">
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid x:Name="SplashLogo" Width="150" Height="150" HorizontalAlignment="Center" Opacity="0" RenderTransformOrigin="0.5,0.5">
+          <Grid.RenderTransform><ScaleTransform x:Name="SplashScale" ScaleX="0.5" ScaleY="0.5"/></Grid.RenderTransform>
+          <!-- the real rounded-square icon, with a soft glow that follows its own rounded outline -->
+          <Image x:Name="SplashIcon" Stretch="Uniform">
+            <Image.Effect><DropShadowEffect Color="#5B8CFF" BlurRadius="52" ShadowDepth="0" Opacity="0.6"/></Image.Effect>
+          </Image>
+          <TextBlock x:Name="SplashO" Text="O" Foreground="#5B8CFF" FontWeight="Bold" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+        <TextBlock x:Name="SplashName" Text="ThE OptImiseR" Foreground="{StaticResource Text}" FontSize="21" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0" Opacity="0"/>
+        <TextBlock x:Name="SplashSub" Text="system optimiser" Foreground="{StaticResource Muted}" FontSize="12.5" HorizontalAlignment="Center" Margin="0,4,0,0" Opacity="0"/>
+      </StackPanel>
+    </Grid>
   </Grid>
 </Window>
