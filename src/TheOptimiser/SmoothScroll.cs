@@ -1,48 +1,56 @@
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace TheOptimiser;
 
-// Smooth, continuous wheel scrolling for a pixel-scrolling (CanContentScroll=False) ScrollViewer.
-// Wheel notches accumulate into a target offset; every frame we ease the ScrollViewer a fraction
-// of the way there (exponential smoothing), so rapid notches blend into one continuous glide
-// instead of a series of separate eased hops (which felt rigid).
+// Smooth wheel scrolling that runs on the render (composition) thread - the same reason the toggle
+// animations are smooth. The ScrollViewer offset is set instantly (so the scrollbar stays correct),
+// then the content is visually caught up by animating a TranslateTransform.Y from the old position
+// back to zero at DesiredFrameRate = the monitor refresh. No per-frame UI-thread scrolling, no cache.
+// Works because the list is fully realised (non-virtualised), so the shifted content has no gaps.
 public static class SmoothScroll
 {
-    private sealed class State { public double Target; public bool Running; }
-
-    private const double Step = 1.8;    // wheel travel per notch (120 * this) - bigger = more momentum
-    private const double Ease = 0.12;   // fraction of remaining distance moved per frame - smaller = longer, smoother glide
+    private const double Step = 0.45;             // wheel travel per notch (120 * this) - lower = slower
+    private const double GlideMs = 210;           // catch-up time per notch - longer = gentler motion
+    public static int Fps { get; set; } = 120;    // set to the monitor refresh rate at startup
 
     public static void Enable(ScrollViewer sv)
     {
-        var st = new State { Target = sv.VerticalOffset };
-
-        void Tick(object? sender, EventArgs e)
-        {
-            double cur = sv.VerticalOffset;
-            double diff = st.Target - cur;
-            if (Math.Abs(diff) < 0.4)
-            {
-                sv.ScrollToVerticalOffset(st.Target);
-                CompositionTarget.Rendering -= Tick;
-                st.Running = false;
-                return;
-            }
-            sv.ScrollToVerticalOffset(cur + diff * Ease);
-        }
+        if (sv.Content is not UIElement content) return;
+        var tt = new TranslateTransform();
+        content.RenderTransform = tt;
+        double target = sv.VerticalOffset;
 
         sv.PreviewMouseWheel += (_, e) =>
         {
             if (sv.ScrollableHeight <= 0) return;
             e.Handled = true;
-            if (!st.Running) st.Target = sv.VerticalOffset;          // start from where we actually are
-            st.Target = Math.Clamp(st.Target - e.Delta * Step, 0, sv.ScrollableHeight);
-            if (!st.Running) { st.Running = true; CompositionTarget.Rendering += Tick; }
+
+            double real = sv.VerticalOffset;
+            if (Math.Abs(target - real) > sv.ViewportHeight) target = real;   // resync after a thumb drag
+            double visual = real - tt.Y;                                      // where the content appears right now
+            target = Math.Clamp(target - e.Delta * Step, 0, sv.ScrollableHeight);
+
+            sv.ScrollToVerticalOffset(target);                                // jump the offset; scrollbar correct
+            var anim = new DoubleAnimation(target - visual, 0, new Duration(TimeSpan.FromMilliseconds(GlideMs)))
+            {
+                EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut }   // gentlest start of the ease-outs
+            };
+            Timeline.SetDesiredFrameRate(anim, Fps);
+            tt.BeginAnimation(TranslateTransform.YProperty, anim, HandoffBehavior.SnapshotAndReplace);
         };
 
-        // resync the target when the user drags the thumb or the content resizes
-        sv.ScrollChanged += (_, _) => { if (!st.Running) st.Target = sv.VerticalOffset; };
+        sv.ScrollChanged += (_, e) =>
+        {
+            if (e.ExtentHeightChange != 0)   // content changed (section switch / filter): clear any glide
+            {
+                tt.BeginAnimation(TranslateTransform.YProperty, null);
+                tt.Y = 0;
+                target = sv.VerticalOffset;
+            }
+        };
     }
 }

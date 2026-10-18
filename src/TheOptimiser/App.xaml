@@ -34,17 +34,21 @@
                 </Ellipse>
                 <VisualStateManager.VisualStateGroups>
                   <VisualStateGroup x:Name="CheckStates">
-                    <VisualStateGroup.Transitions>
-                      <VisualTransition GeneratedDuration="0:0:0.18">
-                        <VisualTransition.GeneratedEasingFunction><CubicEase EasingMode="EaseInOut"/></VisualTransition.GeneratedEasingFunction>
-                      </VisualTransition>
-                    </VisualStateGroup.Transitions>
-                    <VisualState x:Name="Unchecked"/>
+                    <VisualState x:Name="Unchecked">
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="knobT" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.17" Timeline.DesiredFrameRate="180">
+                          <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="trackOn" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.17" Timeline.DesiredFrameRate="180"/>
+                      </Storyboard>
+                    </VisualState>
                     <VisualState x:Name="Indeterminate"/>
                     <VisualState x:Name="Checked">
                       <Storyboard>
-                        <DoubleAnimation Storyboard.TargetName="knobT" Storyboard.TargetProperty="X" To="18" Duration="0"/>
-                        <DoubleAnimation Storyboard.TargetName="trackOn" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
+                        <DoubleAnimation Storyboard.TargetName="knobT" Storyboard.TargetProperty="X" To="18" Duration="0:0:0.17" Timeline.DesiredFrameRate="180">
+                          <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="trackOn" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.17" Timeline.DesiredFrameRate="180"/>
                       </Storyboard>
                     </VisualState>
                   </VisualStateGroup>

@@ -57,6 +57,7 @@ public partial class MainWindow : Window
         // debounce search so the list isn't rebuilt on every keystroke
         _searchTimer.Tick += (_, _) => { _searchTimer.Stop(); Repopulate(); };
         SearchBox.TextChanged += (_, _) => { _searchTimer.Stop(); _searchTimer.Start(); };
+        SmoothScroll.Fps = PrimaryRefreshHz();
         SmoothScroll.Enable(MainScroll);
 
         BtnRecommended.Click += (_, _) => ApplyPreset(g => g.Recommended);
@@ -637,9 +638,13 @@ public partial class MainWindow : Window
                 card.Opacity = (!sel && installed == false) ? 0.6 : 1.0;
                 var dur = TimeSpan.FromMilliseconds(170);
                 IEasingFunction ease = sel ? new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.5 } : new CubicEase { EasingMode = EasingMode.EaseIn };
-                badge.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(sel ? 1 : 0, dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
-                badgeScale.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease });
-                badgeScale.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease });
+                var op = new DoubleAnimation(sel ? 1 : 0, dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+                var sx = new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease };
+                var sy = new DoubleAnimation(sel ? 1 : 0.3, dur) { EasingFunction = ease };
+                foreach (var a in new[] { op, sx, sy }) Timeline.SetDesiredFrameRate(a, SmoothScroll.Fps);
+                badge.BeginAnimation(UIElement.OpacityProperty, op);
+                badgeScale.BeginAnimation(ScaleTransform.ScaleXProperty, sx);
+                badgeScale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
             }
             card.Cursor = Cursors.Hand;
             card.MouseEnter += (_, _) => { if (!sel) card.Background = Res("CardHover"); };
@@ -1016,6 +1021,15 @@ public partial class MainWindow : Window
         var col = (Color)ColorConverter.ConvertFromString(Palette[Math.Abs(h) % Palette.Length]);
         b = new SolidColorBrush(col); b.Freeze(); _colors[key] = b;
         return b;
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr hWnd);
+    [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern int ReleaseDC(IntPtr hWnd, IntPtr hdc);
+    [System.Runtime.InteropServices.DllImport("gdi32.dll")] private static extern int GetDeviceCaps(IntPtr hdc, int index);
+    private static int PrimaryRefreshHz()
+    {
+        try { var dc = GetDC(IntPtr.Zero); int hz = GetDeviceCaps(dc, 116 /* VREFRESH */); ReleaseDC(IntPtr.Zero, dc); return hz > 1 ? hz : 120; }
+        catch { return 120; }
     }
 
     private static string ShortTitle(string d)
