@@ -533,15 +533,58 @@ public partial class MainWindow : Window
         {
             AddHeader(grp.Key, grp.Count());
             var wrap = new WrapPanel();
-            foreach (var a in grp)
-            {
-                var app = a;
-                wrap.Children.Add(BuildCard(app.Name, app.Description, null, Initial(app.Name), ColorFor(app.Category),
-                    app.Selected, null, on => { app.Selected = on; UpdateCount(); }, asTile: true));
-            }
+            foreach (var a in grp) { var app = a; wrap.Children.Add(BuildInstallRow(app)); }
             ListHost.Children.Add(wrap);
         }
         UpdateCount();
+    }
+
+    // Compact winutil-style install row: small real app icon + name, click to select; flows into columns.
+    private Border BuildInstallRow(InstallApp app)
+    {
+        bool sel = app.Selected;
+        var row = new Border
+        {
+            Width = 234, Height = 34, CornerRadius = new CornerRadius(7),
+            Margin = new Thickness(0, 0, 8, 8), Padding = new Thickness(7, 0, 8, 0),
+            Background = sel ? SelBg : Res("Card"), BorderThickness = new Thickness(1.2),
+            BorderBrush = sel ? Res("Accent") : Res("Stroke"), Cursor = Cursors.Hand, ToolTip = app.Description
+        };
+        var g = new Grid();
+        foreach (var w in new[] { GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto })
+            g.ColumnDefinitions.Add(new ColumnDefinition { Width = w });
+
+        var ic = new Border { Width = 20, Height = 20, CornerRadius = new CornerRadius(5), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 9, 0), Background = ColorFor(app.Name) };
+        ic.Child = new TextBlock { Text = Initial(app.Name), Foreground = Res("Text"), FontSize = 10.5, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(ic, 0); g.Children.Add(ic);
+
+        var name = new TextBlock { Text = app.Name, Foreground = Res("Text"), FontSize = 12.5, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+        Grid.SetColumn(name, 1); g.Children.Add(name);
+
+        var check = new Border { Width = 18, Height = 18, CornerRadius = new CornerRadius(9), Background = Res("Accent"), VerticalAlignment = VerticalAlignment.Center, Visibility = sel ? Visibility.Visible : Visibility.Collapsed };
+        check.Child = new Viewbox { Width = 10, Height = 10, Child = new System.Windows.Shapes.Path { Data = CheckGeom, Stroke = Brushes.White, StrokeThickness = 2, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round } };
+        Grid.SetColumn(check, 2); g.Children.Add(check);
+
+        row.Child = g;
+        row.MouseEnter += (_, _) => { if (!sel) row.Background = Res("CardHover"); };
+        row.MouseLeave += (_, _) => { if (!sel) row.Background = Res("Card"); };
+        row.MouseLeftButtonUp += (_, _) =>
+        {
+            sel = !sel; app.Selected = sel;
+            row.Background = sel ? SelBg : Res("Card");
+            row.BorderBrush = sel ? Res("Accent") : Res("Stroke");
+            check.Visibility = sel ? Visibility.Visible : Visibility.Collapsed;
+            UpdateCount();
+        };
+
+        LoadInstallIcon(app, ic);
+        return row;
+    }
+
+    private async void LoadInstallIcon(InstallApp app, Border ic)
+    {
+        var img = await AppIcons.GetAsync(app);
+        if (img != null) { ic.Child = null; ic.Background = new ImageBrush(img) { Stretch = Stretch.Uniform }; }
     }
 
     private void PopulateExpert()
