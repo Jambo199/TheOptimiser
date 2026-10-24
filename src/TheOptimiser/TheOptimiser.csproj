@@ -14,9 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="catalog.json">
+    <!-- embed the catalog so a standalone single-file exe works; still copied to output for dev + a disk override -->
+    <None Remove="catalog.json" />
+    <EmbeddedResource Include="catalog.json" LogicalName="catalog.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </EmbeddedResource>
+    <!-- bake the splash logo into the exe (pack://application:,,,/assets/logo.png); the disk copy still overrides it -->
+    <Resource Include="..\..\assets\logo.png" Link="assets\logo.png" />
   </ItemGroup>
 
 </Project>

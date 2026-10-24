@@ -109,16 +109,15 @@ public partial class MainWindow : Window
     // Only runs when the window is actually shown (the preview calls HideSplash and never fires Loaded).
     private void PlayLaunchAnimation()
     {
-        try   // show the real app icon in the circle; falls back to the "O" if assets\logo.png isn't beside the exe
+        try   // the real app icon: a logo beside the exe wins, else the copy baked into the exe; the "O" shows if neither loads
         {
             var p = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "logo.png");
-            if (System.IO.File.Exists(p))
-            {
-                var bi = new BitmapImage();
-                bi.BeginInit(); bi.UriSource = new Uri(p); bi.CacheOption = BitmapCacheOption.OnLoad; bi.EndInit(); bi.Freeze();
-                SplashIcon.Source = bi;
-                SplashO.Visibility = Visibility.Collapsed;
-            }
+            var bi = new BitmapImage();
+            bi.BeginInit();
+            bi.UriSource = System.IO.File.Exists(p) ? new Uri(p) : new Uri("pack://application:,,,/assets/logo.png");
+            bi.CacheOption = BitmapCacheOption.OnLoad; bi.EndInit(); bi.Freeze();
+            SplashIcon.Source = bi;
+            SplashO.Visibility = Visibility.Collapsed;
         }
         catch { }
 
